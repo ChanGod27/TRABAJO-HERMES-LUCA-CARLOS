@@ -120,7 +120,8 @@ func TestQueries_CRUD(t *testing.T) {
 	// =========================================================================
 	t.Log("Iniciando pruebas de TAREA...")
 
-	ahora := time.Now().Truncate(time.Microsecond)
+	//truncamiento a utc para al comparar tengan todos el mismo huso horario
+	ahora := time.Now().UTC().Truncate(time.Second)
 	vencimiento := ahora.Add(48 * time.Hour)
 
 	// 3.1 Create Tarea
