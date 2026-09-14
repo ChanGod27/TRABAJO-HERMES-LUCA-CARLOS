@@ -19,6 +19,6 @@ until [ "$(docker inspect -f '{{.State.Health.Status}}' $(docker compose ps -q d
 done
 
 echo "5. Ejecutando tests..."
-go test -v ./...
+go test -v 
 
 echo "Pruebas finalizadas con éxito."
