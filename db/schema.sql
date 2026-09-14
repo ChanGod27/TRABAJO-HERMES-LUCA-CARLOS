@@ -41,6 +41,6 @@ CREATE TABLE horas_trabajadas (
     timestamp_fin TIMESTAMP,
     CONSTRAINT fk_horas_tarea 
         FOREIGN KEY (id_tarea) 
-        REFERENCES tarea(id_tarea) 
+        REFERENCES tarea(id_tarea)
         ON DELETE CASCADE
 );

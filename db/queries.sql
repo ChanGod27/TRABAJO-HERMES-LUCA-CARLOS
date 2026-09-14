@@ -31,15 +31,14 @@ WHERE id_usuario = $1;
 -- name: CreateMateria :one
 INSERT INTO lista_tarea (
     id_usuario,
-    titulo,
-    color
+    titulo
 ) VALUES (
-    $1, $2, $3
+    $1, $2
 )
-RETURNING id_lista, id_usuario, titulo, color;
+RETURNING id_lista, id_usuario, titulo;
 
 -- name: ListMateriasByUsuario :many
-SELECT id_lista, id_usuario, titulo, color
+SELECT id_lista, id_usuario, titulo
 FROM lista_tarea
 WHERE id_usuario = $1
 ORDER BY id_lista ASC;
@@ -47,10 +46,9 @@ ORDER BY id_lista ASC;
 -- name: UpdateMateria :one
 UPDATE lista_tarea
 SET 
-    titulo = $2,
-    color = $3
+    titulo = $2
 WHERE id_lista = $1
-RETURNING id_lista, id_usuario, titulo, color;
+RETURNING id_lista, id_usuario, titulo;
 
 -- name: DeleteMateria :exec
 DELETE FROM lista_tarea
