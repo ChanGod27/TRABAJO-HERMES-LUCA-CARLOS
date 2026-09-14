@@ -17,7 +17,7 @@ func TestQueries_CRUD(t *testing.T) {
 	//Abrimos la base de datos
 	conn, errOpen := abridDB(ctx, connStr)
 	if errOpen != nil {
-		t.Fatal(errOpen)
+		t.Fatal(errOpen)TRABAJO-HERMES-LUCA-CARLOS
 	}
 	//Cuando termine de ejecutar el metodo, se cierra la conexion con la base de datos
 	defer conn.Close(ctx)
