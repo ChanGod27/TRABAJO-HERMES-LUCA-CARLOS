@@ -1,1 +1,3 @@
-Hay dos formas de ejecutar, usando makefile o corriendo el test
+Hay dos formas de ejecutar:  
+- "makefile test""  
+- "./test.sh" --> utilizanod previamente chmod +x test.sh
