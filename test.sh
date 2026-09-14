@@ -14,7 +14,7 @@ docker compose up -d
 trap 'docker compose down -v' EXIT
 
 echo "4. Esperando a que la base de datos esté lista (Healthcheck)..."
-until [ "$$(docker inspect -f '{{.State.Health.Status}}' $$(docker compose ps -q db) 2>/dev/null)" = "healthy" ]; do
+until [ "$(docker inspect -f '{{.State.Health.Status}}' $(docker compose ps -q db) 2>/dev/null)" = "healthy" ]; do
     sleep 1
 done
 
