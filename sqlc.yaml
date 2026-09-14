@@ -1,8 +1,8 @@
 version: "2"
 sql:
   - engine: "postgresql"
-    schema: "schema.sql"      # Ubicación de tus tablas/DDL (o carpeta "db/migrations")
-    queries: "queries.sql"    # Ubicación de tus consultas con anotaciones sqlc
+    schema: "/db/schema.sql"      # Ubicación de tus tablas/DDL (o carpeta "db/migrations")
+    queries: "/db/queries.sql"    # Ubicación de tus consultas con anotaciones sqlc
     gen:
       go:
         package: "db"            # Nombre del package de Go para los archivos generados
