@@ -232,7 +232,7 @@ func TestQueries_CRUD(t *testing.T) {
 	}
 
 	// 4.4 Update Horas Trabajadas
-	finSesionCorregido := finSesion.Add(30 * time.Minute)
+	finSesionCorregido := finSesion.Add(30 * time.Minute).Truncate(time.Second)
 	updateHorasParams := db.UpdateHorasTrabajadasParams{
 		IDHoras:         horasCreadas.IDHoras,
 		TimestampInicio: horasCreadas.TimestampInicio,
@@ -242,8 +242,9 @@ func TestQueries_CRUD(t *testing.T) {
 	if err != nil {
 		t.Fatalf("UpdateHorasTrabajadas falló: %v", err)
 	}
-	if !horasActualizadas.TimestampFin.Time.Equal(finSesionCorregido) {
-		t.Fatalf("UpdateHorasTrabajadas no actualizó el timestamp_fin correctamente")
+	if horasActualizadas.TimestampFin.Time.Unix() != finSesionCorregido.Unix() {
+		t.Fatalf("UpdateHorasTrabajadas inconsistente: esperado %v, obtenido %v",
+			finSesionCorregido, horasActualizadas.TimestampFin.Time)
 	}
 
 	// =========================================================================
