@@ -5,7 +5,7 @@ La especificación detallada del modelo relacional, entidades, matriz de operaci
 ## Ejecución del Entorno (Base de Datos)
 Para levantar la base de datos PostgreSQL con Docker:
 
-Primero hay que dar permiso de ejecucion al archivo test.sh ---> chmod +x test.sh :
+Primero hay que dar permiso de ejecucion al archivo test.sh ---> chmod +x test.sh
 
 Luego hay dos formas de ejecutar:  
 
