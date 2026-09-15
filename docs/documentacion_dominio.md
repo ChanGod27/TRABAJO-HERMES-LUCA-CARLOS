@@ -106,6 +106,6 @@ Es una sub-entidad que registra los bloques temporales dedicados efectivamente a
 
 ---
 
-5. Lógica de Negocio y Reglas de Estado
+## 5. Lógica de Negocio y Reglas de Estado
 * Estado "Aplazada / Vencida": el modelo de persistencia delega la determinación del retraso a la capa de cliente.
 * Una tarea se considera aplazada/vencida si: completada es igual a FALSE (o Falso), y fecha_finalizacion es anterior a la fecha y hora actual (CURRENT_TIMESTAMP).
