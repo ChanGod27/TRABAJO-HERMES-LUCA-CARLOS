@@ -106,13 +106,6 @@ Es una sub-entidad que registra los bloques temporales dedicados efectivamente a
 
 ---
 
-## 5. Lógica de Negocio y Reglas de Estado
-
-1. **Estado "Aplazada / Vencida":**
-   * El modelo de persistencia delega la determinación del retraso a la capa de cliente.
-   * Una tarea se considera aplazada/vencida si:
-     $$\text{completada} = \text{FALSE} \quad \land \quad \text{fecha\_finalizacion} < \text{CURRENT\_TIMESTAMP}$$
-   * El frontend lo resalta visualmente en color rojo sin requerir jobs periódicos o triggers de base de datos.
-
-2. **Cálculo de Duración de Sesión:**
-   * La duración de un intervalo de estudio no se almacena como un valor estático, sino que se calcula en tiempo de consulta como la diferencia entre `timestamp_fin` y `timestamp_inicio`.
+5. Lógica de Negocio y Reglas de Estado
+* Estado "Aplazada / Vencida": el modelo de persistencia delega la determinación del retraso a la capa de cliente.
+* Una tarea se considera aplazada/vencida si: completada es igual a FALSE (o Falso), y fecha_finalizacion es anterior a la fecha y hora actual (CURRENT_TIMESTAMP).
