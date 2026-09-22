@@ -12,89 +12,103 @@ import (
 )
 
 func TestQueries_CRUD(t *testing.T) {
-	//Al usar el drive pgx, hay que definir un context
-	//Para las interacciones con la api
 	ctx := context.Background()
 
-	//Definimos el string con los parametros de conexion de la base de datos
 	connStr := "postgres://trabajo_web:carlos-luca-hermes@localhost:5432/go_tasks_db?sslmode=disable"
 
-	//Abrimos la base de datos
 	conn, errOpen := abridDB(ctx, connStr)
 	if errOpen != nil {
-		t.Fatal(errOpen)
+		t.Fatalf("error crítico al conectar a la base de datos: %v", errOpen)
 	}
-	//Cuando termine de ejecutar el metodo, se cierra la conexion con la base de datos
 	defer conn.Close(ctx)
 
-	//Instanciamos el objeto de queries
 	queries := db.New(conn)
 
-	//TESTS DE OPERACIONES CRUD
-	t.Log("Iniciando pruebas de operaciones CRUD")
+	// Orquestación secuencial por tabla:
+	var user db.CreateUserRow
+	t.Run("Tabla_Usuario", func(t *testing.T) {
+		user = testUsuario(ctx, t, queries)
+	})
 
-	// =========================================================================
-	// 1. TESTS CRUD: USUARIO
-	// =========================================================================
+	var materia db.ListaTarea
+	t.Run("Tabla_ListaTarea_Materia", func(t *testing.T) {
+		materia = testMateria(ctx, t, queries, user.IDUsuario)
+	})
 
-	// 1.1 Create User
-	userParams := db.CreateUserParams{
+	var tarea db.Tarea
+	t.Run("Tabla_Tarea", func(t *testing.T) {
+		tarea = testTarea(ctx, t, queries, materia.IDLista)
+	})
+
+	var horas db.HorasTrabajada
+	t.Run("Tabla_HorasTrabajadas", func(t *testing.T) {
+		horas = testHorasTrabajadas(ctx, t, queries, tarea.IDTarea)
+	})
+
+	t.Run("Limpieza_Delete_Secuencial", func(t *testing.T) {
+		testLimpieza(ctx, t, queries, horas.IDHoras, tarea.IDTarea, materia.IDLista, user.IDUsuario)
+	})
+}
+
+// =============================================================================
+// 1. FUNCIONES AUXILIARES POR TABLA
+// =============================================================================
+
+func testUsuario(ctx context.Context, t *testing.T, q *db.Queries) db.CreateUserRow {
+	// Create
+	params := db.CreateUserParams{
 		Nombre:     "Hermes",
 		Apellido:   "Truelsegaard",
 		Email:      "hermes@example.com",
 		Contrasena: "hash_super_secreto_123",
 	}
-
-	userCreado, err := queries.CreateUser(ctx, userParams)
+	user, err := q.CreateUser(ctx, params)
 	if err != nil {
 		t.Fatalf("CreateUser falló: %v", err)
 	}
-
-	if userCreado.IDUsuario == 0 {
+	if user.IDUsuario == 0 {
 		t.Fatalf("CreateUser retornó un ID inválido (0)")
 	}
+	t.Logf("Usuario creado exitosamente con ID: %d", user.IDUsuario)
 
-	t.Logf("Usuario creado exitosamente con ID: %d", userCreado.IDUsuario)
-
-	// 1.2 Get User By ID
-	userPorID, err := queries.GetUserByID(ctx, userCreado.IDUsuario)
+	// Get by ID
+	userPorID, err := q.GetUserByID(ctx, user.IDUsuario)
 	if err != nil {
 		t.Fatalf("GetUserByID falló: %v", err)
 	}
-	if userPorID.Email != userParams.Email {
-		t.Fatalf("GetUserByID inconsistente: esperado %s, obtenido %s", userParams.Email, userPorID.Email)
+	if userPorID.Email != params.Email {
+		t.Fatalf("GetUserByID inconsistente: esperado %s, obtenido %s", params.Email, userPorID.Email)
 	}
 
-	// 1.3 Get User By Email
-	userPorEmail, err := queries.GetUserByEmail(ctx, userParams.Email)
+	// Get by Email
+	userPorEmail, err := q.GetUserByEmail(ctx, params.Email)
 	if err != nil {
 		t.Fatalf("GetUserByEmail falló: %v", err)
 	}
-	if userPorEmail.IDUsuario != userCreado.IDUsuario {
-		t.Fatalf("GetUserByEmail inconsistente: esperado ID %d, obtenido %d", userCreado.IDUsuario, userPorEmail.IDUsuario)
+	if userPorEmail.IDUsuario != user.IDUsuario {
+		t.Fatalf("GetUserByEmail inconsistente: esperado ID %d, obtenido %d", user.IDUsuario, userPorEmail.IDUsuario)
 	}
 
-	// =========================================================================
-	// 2. TESTS CRUD: MATERIA (LISTA_TAREA)
-	// =========================================================================
-	t.Log("Iniciando pruebas de LISTA_TAREA (MATERIA)...")
+	return user
+}
 
-	// 2.1 Create Materia
-	materiaParams := db.CreateMateriaParams{
-		IDUsuario: userCreado.IDUsuario,
+func testMateria(ctx context.Context, t *testing.T, q *db.Queries, idUsuario int32) db.ListaTarea {
+	// Create
+	params := db.CreateMateriaParams{
+		IDUsuario: idUsuario,
 		Titulo:    "Programación Web",
 	}
-	materiaCreada, err := queries.CreateMateria(ctx, materiaParams)
+	materia, err := q.CreateMateria(ctx, params)
 	if err != nil {
 		t.Fatalf("CreateMateria falló: %v", err)
 	}
-	if materiaCreada.IDLista == 0 {
+	if materia.IDLista == 0 {
 		t.Fatalf("CreateMateria retornó un ID inválido (0)")
 	}
-	t.Logf("Materia creada con ID: %d", materiaCreada.IDLista)
+	t.Logf("Materia creada con ID: %d", materia.IDLista)
 
-	// 2.2 List Materias By Usuario
-	materias, err := queries.ListMateriasByUsuario(ctx, userCreado.IDUsuario)
+	// List
+	materias, err := q.ListMateriasByUsuario(ctx, idUsuario)
 	if err != nil {
 		t.Fatalf("ListMateriasByUsuario falló: %v", err)
 	}
@@ -102,56 +116,54 @@ func TestQueries_CRUD(t *testing.T) {
 		t.Fatalf("ListMateriasByUsuario esperaba 1 elemento, obtuvo %d", len(materias))
 	}
 
-	// 2.3 Update Materia
-	updateMateriaParams := db.UpdateMateriaParams{
-		IDLista: materiaCreada.IDLista,
+	// Update
+	updateParams := db.UpdateMateriaParams{
+		IDLista: materia.IDLista,
 		Titulo:  "Programación Web II",
 	}
-	materiaActualizada, err := queries.UpdateMateria(ctx, updateMateriaParams)
+	materiaActualizada, err := q.UpdateMateria(ctx, updateParams)
 	if err != nil {
 		t.Fatalf("UpdateMateria falló: %v", err)
 	}
-	if materiaActualizada.Titulo != updateMateriaParams.Titulo {
-		t.Fatalf("UpdateMateria no actualizó el título: esperado %s, obtenido %s", updateMateriaParams.Titulo, materiaActualizada.Titulo)
+	if materiaActualizada.Titulo != updateParams.Titulo {
+		t.Fatalf("UpdateMateria no actualizó el título: esperado %s, obtenido %s", updateParams.Titulo, materiaActualizada.Titulo)
 	}
 
-	// =========================================================================
-	// 3. TESTS CRUD: TAREA
-	// =========================================================================
-	t.Log("Iniciando pruebas de TAREA...")
+	return materiaActualizada
+}
 
-	//truncamiento a utc para al comparar tengan todos el mismo huso horario
+func testTarea(ctx context.Context, t *testing.T, q *db.Queries, idLista int32) db.Tarea {
 	ahora := time.Now().UTC().Truncate(time.Second)
 	vencimiento := ahora.Add(48 * time.Hour)
 
-	// 3.1 Create Tarea
-	tareaParams := db.CreateTareaParams{
-		IDLista:           materiaCreada.IDLista,
+	// Create
+	params := db.CreateTareaParams{
+		IDLista:           idLista,
 		Titulo:            "Entrega de TP2",
 		FechaInicio:       pgtype.Timestamp{Time: ahora, Valid: true},
 		FechaFinalizacion: pgtype.Timestamp{Time: vencimiento, Valid: true},
 		Descripcion:       pgtype.Text{String: "Implementar sqlc y testing", Valid: true},
 	}
-	tareaCreada, err := queries.CreateTarea(ctx, tareaParams)
+	tarea, err := q.CreateTarea(ctx, params)
 	if err != nil {
 		t.Fatalf("CreateTarea falló: %v", err)
 	}
-	if tareaCreada.IDTarea == 0 {
+	if tarea.IDTarea == 0 {
 		t.Fatalf("CreateTarea retornó un ID inválido (0)")
 	}
-	t.Logf("Tarea creada con ID: %d", tareaCreada.IDTarea)
+	t.Logf("Tarea creada con ID: %d", tarea.IDTarea)
 
-	// 3.2 Get Tarea By ID
-	tareaPorID, err := queries.GetTareaByID(ctx, tareaCreada.IDTarea)
+	// Get by ID
+	tareaPorID, err := q.GetTareaByID(ctx, tarea.IDTarea)
 	if err != nil {
 		t.Fatalf("GetTareaByID falló: %v", err)
 	}
-	if tareaPorID.Titulo != tareaParams.Titulo {
-		t.Fatalf("GetTareaByID inconsistente: esperado %s, obtenido %s", tareaParams.Titulo, tareaPorID.Titulo)
+	if tareaPorID.Titulo != params.Titulo {
+		t.Fatalf("GetTareaByID inconsistente: esperado %s, obtenido %s", params.Titulo, tareaPorID.Titulo)
 	}
 
-	// 3.3 List Tareas By Materia
-	tareas, err := queries.ListTareasByMateria(ctx, materiaCreada.IDLista)
+	// List by Materia
+	tareas, err := q.ListTareasByMateria(ctx, idLista)
 	if err != nil {
 		t.Fatalf("ListTareasByMateria falló: %v", err)
 	}
@@ -159,8 +171,8 @@ func TestQueries_CRUD(t *testing.T) {
 		t.Fatalf("ListTareasByMateria esperaba 1 tarea, obtuvo %d", len(tareas))
 	}
 
-	// 3.4 List Tareas By Rango de Fechas
-	tareasRango, err := queries.ListTareasByRangoFechas(ctx, db.ListTareasByRangoFechasParams{
+	// List by Rango Fechas
+	tareasRango, err := q.ListTareasByRangoFechas(ctx, db.ListTareasByRangoFechasParams{
 		FechaFinalizacion:   pgtype.Timestamp{Time: ahora.Add(-1 * time.Hour), Valid: true},
 		FechaFinalizacion_2: pgtype.Timestamp{Time: vencimiento.Add(1 * time.Hour), Valid: true},
 	})
@@ -171,48 +183,48 @@ func TestQueries_CRUD(t *testing.T) {
 		t.Fatalf("ListTareasByRangoFechas esperaba al menos 1 resultado, obtuvo 0")
 	}
 
-	// 3.5 Update Tarea
-	updateTareaParams := db.UpdateTareaParams{
-		IDTarea:           tareaCreada.IDTarea,
+	// Update
+	updateParams := db.UpdateTareaParams{
+		IDTarea:           tarea.IDTarea,
 		Titulo:            "Entrega de TP2 - Finalizada",
-		FechaInicio:       tareaCreada.FechaInicio,
-		FechaFinalizacion: tareaCreada.FechaFinalizacion,
+		FechaInicio:       tarea.FechaInicio,
+		FechaFinalizacion: tarea.FechaFinalizacion,
 		Descripcion:       pgtype.Text{String: "Entrega completada con tests", Valid: true},
 		Completada:        true,
 	}
-	tareaActualizada, err := queries.UpdateTarea(ctx, updateTareaParams)
+	tareaActualizada, err := q.UpdateTarea(ctx, updateParams)
 	if err != nil {
 		t.Fatalf("UpdateTarea falló: %v", err)
 	}
-	if !tareaActualizada.Completada || tareaActualizada.Titulo != updateTareaParams.Titulo {
+	if !tareaActualizada.Completada || tareaActualizada.Titulo != updateParams.Titulo {
 		t.Fatalf("UpdateTarea no persistió los cambios adecuadamente")
 	}
 
-	// =========================================================================
-	// 4. TESTS CRUD: HORAS TRABAJADAS (CRONÓMETRO)
-	// =========================================================================
-	t.Log("Iniciando pruebas de HORAS TRABAJADAS...")
+	return tareaActualizada
+}
 
+func testHorasTrabajadas(ctx context.Context, t *testing.T, q *db.Queries, idTarea int32) db.HorasTrabajada {
+	ahora := time.Now().UTC().Truncate(time.Second)
 	inicioSesion := ahora.Add(1 * time.Hour)
 	finSesion := ahora.Add(3 * time.Hour)
 
-	// 4.1 Create Horas Trabajadas
-	horasParams := db.CreateHorasTrabajadasParams{
-		IDTarea:         tareaCreada.IDTarea,
+	// Create
+	params := db.CreateHorasTrabajadasParams{
+		IDTarea:         idTarea,
 		TimestampInicio: pgtype.Timestamp{Time: inicioSesion, Valid: true},
 		TimestampFin:    pgtype.Timestamp{Time: finSesion, Valid: true},
 	}
-	horasCreadas, err := queries.CreateHorasTrabajadas(ctx, horasParams)
+	horas, err := q.CreateHorasTrabajadas(ctx, params)
 	if err != nil {
 		t.Fatalf("CreateHorasTrabajadas falló: %v", err)
 	}
-	if horasCreadas.IDHoras == 0 {
+	if horas.IDHoras == 0 {
 		t.Fatalf("CreateHorasTrabajadas retornó un ID inválido (0)")
 	}
-	t.Logf("Horas trabajadas registradas con ID: %d", horasCreadas.IDHoras)
+	t.Logf("Horas trabajadas registradas con ID: %d", horas.IDHoras)
 
-	// 4.2 List Horas By Tarea
-	horasPorTarea, err := queries.ListHorasByTarea(ctx, tareaCreada.IDTarea)
+	// List by Tarea
+	horasPorTarea, err := q.ListHorasByTarea(ctx, idTarea)
 	if err != nil {
 		t.Fatalf("ListHorasByTarea falló: %v", err)
 	}
@@ -220,8 +232,8 @@ func TestQueries_CRUD(t *testing.T) {
 		t.Fatalf("ListHorasByTarea esperaba 1 registro, obtuvo %d", len(horasPorTarea))
 	}
 
-	// 4.3 List Horas By Rango de Fechas
-	horasRango, err := queries.ListHorasByRangoFechas(ctx, db.ListHorasByRangoFechasParams{
+	// List by Rango Fechas
+	horasRango, err := q.ListHorasByRangoFechas(ctx, db.ListHorasByRangoFechasParams{
 		TimestampInicio:   pgtype.Timestamp{Time: ahora, Valid: true},
 		TimestampInicio_2: pgtype.Timestamp{Time: finSesion.Add(1 * time.Hour), Valid: true},
 	})
@@ -232,14 +244,14 @@ func TestQueries_CRUD(t *testing.T) {
 		t.Fatalf("ListHorasByRangoFechas esperaba al menos 1 resultado, obtuvo 0")
 	}
 
-	// 4.4 Update Horas Trabajadas
+	// Update
 	finSesionCorregido := finSesion.Add(30 * time.Minute).Truncate(time.Second)
-	updateHorasParams := db.UpdateHorasTrabajadasParams{
-		IDHoras:         horasCreadas.IDHoras,
-		TimestampInicio: horasCreadas.TimestampInicio,
+	updateParams := db.UpdateHorasTrabajadasParams{
+		IDHoras:         horas.IDHoras,
+		TimestampInicio: horas.TimestampInicio,
 		TimestampFin:    pgtype.Timestamp{Time: finSesionCorregido, Valid: true},
 	}
-	horasActualizadas, err := queries.UpdateHorasTrabajadas(ctx, updateHorasParams)
+	horasActualizadas, err := q.UpdateHorasTrabajadas(ctx, updateParams)
 	if err != nil {
 		t.Fatalf("UpdateHorasTrabajadas falló: %v", err)
 	}
@@ -248,16 +260,15 @@ func TestQueries_CRUD(t *testing.T) {
 			finSesionCorregido, horasActualizadas.TimestampFin.Time)
 	}
 
-	// =========================================================================
-	// 5. BORRADO EN CASCADA / LIMPIEZA INVERSA (DELETE)
-	// =========================================================================
-	t.Log("Iniciando eliminación secuencial de registros...")
+	return horasActualizadas
+}
 
-	// 5.1 Delete Horas Trabajadas
-	if err := queries.DeleteHorasTrabajadas(ctx, horasCreadas.IDHoras); err != nil {
+func testLimpieza(ctx context.Context, t *testing.T, q *db.Queries, idHoras int32, idTarea int32, idLista int32, idUsuario int32) {
+	// 1. Delete Horas
+	if err := q.DeleteHorasTrabajadas(ctx, idHoras); err != nil {
 		t.Fatalf("DeleteHorasTrabajadas falló: %v", err)
 	}
-	horasCheck, err := queries.ListHorasByTarea(ctx, tareaCreada.IDTarea)
+	horasCheck, err := q.ListHorasByTarea(ctx, idTarea)
 	if err != nil {
 		t.Fatalf("Error consultando horas tras borrado: %v", err)
 	}
@@ -265,27 +276,24 @@ func TestQueries_CRUD(t *testing.T) {
 		t.Fatalf("DeleteHorasTrabajadas no eliminó el registro: quedan %d items", len(horasCheck))
 	}
 
-	// 5.2 Delete Tarea
-	if err := queries.DeleteTarea(ctx, tareaCreada.IDTarea); err != nil {
+	// 2. Delete Tarea
+	if err := q.DeleteTarea(ctx, idTarea); err != nil {
 		t.Fatalf("DeleteTarea falló: %v", err)
 	}
-	_, err = queries.GetTareaByID(ctx, tareaCreada.IDTarea)
+	_, err = q.GetTareaByID(ctx, idTarea)
 	if !errors.Is(err, pgx.ErrNoRows) {
 		t.Fatalf("GetTareaByID esperaba pgx.ErrNoRows tras el borrado, obtuvo: %v", err)
 	}
 
-	// 5.3 Delete Materia
-	if err := queries.DeleteMateria(ctx, materiaCreada.IDLista); err != nil {
+	// 3. Delete Materia
+	if err := q.DeleteMateria(ctx, idLista); err != nil {
 		t.Fatalf("DeleteMateria falló: %v", err)
 	}
-	materiasCheck, err := queries.ListMateriasByUsuario(ctx, userCreado.IDUsuario)
+	materiasCheck, err := q.ListMateriasByUsuario(ctx, idUsuario)
 	if err != nil {
 		t.Fatalf("Error consultando materias tras borrado: %v", err)
 	}
 	if len(materiasCheck) != 0 {
 		t.Fatalf("DeleteMateria no eliminó el registro: quedan %d items", len(materiasCheck))
 	}
-
-	t.Log("Todos los tests de operaciones CRUD pasaron exitosamente.")
-
 }
