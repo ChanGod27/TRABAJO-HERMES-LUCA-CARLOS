@@ -1,0 +1,4 @@
+# Archivos generados por sqlc en la carpta db
+/db/db.go
+/db/models.go
+/db/*.sql.go
