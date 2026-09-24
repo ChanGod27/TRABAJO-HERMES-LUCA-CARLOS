@@ -1,7 +1,6 @@
 package main
 
 import (
-	"ServidorEntregable/db"
 	"context"
 	"fmt"
 	"net/http"
@@ -20,7 +19,6 @@ func main() {
 	defer conn.Close(ctx)
 
 	//Instanciar objeto de la base de datos (userRepository)
-	queries := db.New(conn)
 
 	//Implementacion del servidor de archivos
 	staticDir := "./static"
