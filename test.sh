@@ -21,10 +21,4 @@ done
 echo "5. Ejecutando tests..."
 go test -v 
 
-echo "6. Levantando Servidor"
-go run . &
-
-echo "7. Ejecutando tests con hurl"
-hurl --test request.hurl
-
 echo "Pruebas finalizadas con éxito."

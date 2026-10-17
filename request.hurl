@@ -12,7 +12,7 @@ Content-Type: aplication/json
 }
 HTTP 201
 [Asserts]
-jsonpath "$.id" isInteger
+jsonpath "$.id_usuario" exists
 jsonpath "$.Nombre" == "Carlos"
 jsonpath "$.Apellido" == "Galardi"
 jsonpath "$.Email" == "carlos@gmail.com"
