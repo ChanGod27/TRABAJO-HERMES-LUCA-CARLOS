@@ -4,8 +4,9 @@
 # 1. createUsuario
 POST http://localhost:8080/usuarios
 Content-Type: application/json
+
 {
-    "Nombre": "Carloss",
+    "Nombre": "Carlos",
     "Apellido": "Galardi",
     "Email": "carlos@gmail.com",
     "Contrasena": "fisica1"
