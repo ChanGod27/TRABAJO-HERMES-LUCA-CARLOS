@@ -508,65 +508,65 @@ func main() {
 	http.Handle("/", fileServer)
 
 	// Handlers que conectan las operaciones crud
-	// Usuarios[cite: 1]
-	http.HandleFunc("POST /usuarios", func(w http.ResponseWriter, r *http.Request) {
+	// Usuarios
+	http.HandleFunc("/usuarios", func(w http.ResponseWriter, r *http.Request) {
 		createUsuario(w, r, queries, ctx)
 	})
-	http.HandleFunc("GET /usuarios/email/{email}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/usuarios/email/{email}", func(w http.ResponseWriter, r *http.Request) {
 		getUserByEmail(w, r, queries, ctx)
 	})
-	http.HandleFunc("GET /usuarios/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/usuarios/{id}", func(w http.ResponseWriter, r *http.Request) {
 		getUserById(w, r, queries, ctx)
 	})
 
-	// Materias[cite: 1]
-	http.HandleFunc("POST /materias", func(w http.ResponseWriter, r *http.Request) {
+	// Materias
+	http.HandleFunc("/materias", func(w http.ResponseWriter, r *http.Request) {
 		createMateria(w, r, queries, ctx)
 	})
-	http.HandleFunc("GET /materias/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/materias/{id}", func(w http.ResponseWriter, r *http.Request) {
 		getListMateriasByUsuario(w, r, queries, ctx)
 	})
-	http.HandleFunc("PUT /materias/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/materias/{id}", func(w http.ResponseWriter, r *http.Request) {
 		putUpdateMateria(w, r, queries, ctx)
 	})
-	http.HandleFunc("DELETE /materias/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/materias/{id}", func(w http.ResponseWriter, r *http.Request) {
 		deleteMateria(w, r, queries, ctx)
 	})
 
-	// Tareas[cite: 1]
-	http.HandleFunc("POST /tareas", func(w http.ResponseWriter, r *http.Request) {
+	// Tareas
+	http.HandleFunc("/tareas", func(w http.ResponseWriter, r *http.Request) {
 		createTarea(w, r, queries, ctx)
 	})
-	http.HandleFunc("GET /tareas/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tareas/{id}", func(w http.ResponseWriter, r *http.Request) {
 		getTareaById(w, r, queries, ctx)
 	})
-	http.HandleFunc("GET /tareas/materia/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tareas/materia/{id}", func(w http.ResponseWriter, r *http.Request) {
 		getListTareasByMateria(w, r, queries, ctx)
 	})
-	http.HandleFunc("GET /tareas/fechas", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tareas/fechas", func(w http.ResponseWriter, r *http.Request) {
 		getListTareasByRangoFechas(w, r, queries, ctx)
 	})
-	http.HandleFunc("PUT /tareas/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tareas/{id}", func(w http.ResponseWriter, r *http.Request) {
 		putUpdateTarea(w, r, queries, ctx)
 	})
-	http.HandleFunc("DELETE /tareas/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tareas/{id}", func(w http.ResponseWriter, r *http.Request) {
 		deleteTarea(w, r, queries, ctx)
 	})
 
-	// Horas[cite: 1]
-	http.HandleFunc("POST /horas", func(w http.ResponseWriter, r *http.Request) {
+	// Horas
+	http.HandleFunc("/horas", func(w http.ResponseWriter, r *http.Request) {
 		createHorasTrabajadas(w, r, queries, ctx)
 	})
-	http.HandleFunc("GET /horas/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/horas/{id}", func(w http.ResponseWriter, r *http.Request) {
 		getListHorasByTarea(w, r, queries, ctx)
 	})
-	http.HandleFunc("GET /horas/fechas", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/horas/fechas", func(w http.ResponseWriter, r *http.Request) {
 		getListHorasByRangoFechas(w, r, queries, ctx)
 	})
-	http.HandleFunc("PUT /horas/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/horas/{id}", func(w http.ResponseWriter, r *http.Request) {
 		putUpdateHorasTrabajadas(w, r, queries, ctx)
 	})
-	http.HandleFunc("DELETE /horas/{id}", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/horas/{id}", func(w http.ResponseWriter, r *http.Request) {
 		deleteHorasTrabajadas(w, r, queries, ctx)
 	})
 
