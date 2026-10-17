@@ -38,7 +38,7 @@ func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx co
 		Contrasena: newUsuario.Contrasena,
 	}
 
-	id, err := q.CreateUser(ctx, params)
+	user, err := q.CreateUser(ctx, params)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -46,7 +46,7 @@ func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx co
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(id)
+	json.NewEncoder(w).Encode(user)
 }
 
 func getUserByEmail(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
