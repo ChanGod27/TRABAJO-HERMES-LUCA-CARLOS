@@ -5,7 +5,7 @@
 POST http://localhost:8080/usuarios
 Content-Type: aplication/json
 {
-    "Nombre": "Carlos",
+    "Nombre": "Carloss",
     "Apellido": "Galardi",
     "Email": "carlos@gmail.com",
     "Contrasena": "fisica1"

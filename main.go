@@ -14,7 +14,7 @@ import (
 // 1. OPERACIONES DE USUARIO
 // ==========================================
 
-func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var newUsuario db.Usuario
 
 	err := json.NewDecoder(r.Body).Decode(&newUsuario)
@@ -38,7 +38,7 @@ func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx co
 		Contrasena: newUsuario.Contrasena,
 	}
 
-	id, err := q.CreateUser(ctx, params)
+	id, err := q.CreateUser(r.Context(), params)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -49,7 +49,7 @@ func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx co
 	json.NewEncoder(w).Encode(id)
 }
 
-func getUserByEmail(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func getUserByEmail(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	email := r.PathValue("email")
 
 	if strings.TrimSpace(email) == "" {
@@ -57,7 +57,7 @@ func getUserByEmail(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx c
 		return
 	}
 
-	newUsuario, err := q.GetUserByEmail(ctx, email)
+	newUsuario, err := q.GetUserByEmail(r.Context(), email)
 	if err != nil {
 		http.Error(w, "Usuario no encontrado", http.StatusNotFound)
 		return
@@ -67,7 +67,7 @@ func getUserByEmail(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx c
 	json.NewEncoder(w).Encode(newUsuario)
 }
 
-func getUserById(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func getUserById(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
@@ -78,7 +78,7 @@ func getUserById(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx cont
 
 	id := int32(id64)
 
-	newUsuario, err := q.GetUserByID(ctx, id)
+	newUsuario, err := q.GetUserByID(r.Context(), id)
 	if err != nil {
 		http.Error(w, "Usuario no encontrado", http.StatusNotFound)
 		return
@@ -92,7 +92,7 @@ func getUserById(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx cont
 // 2. OPERACIONES DE MATERIA (db.ListaTarea)
 // ==========================================
 
-func createMateria(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func createMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var newMateria db.ListaTarea
 
 	err := json.NewDecoder(r.Body).Decode(&newMateria)
@@ -111,7 +111,7 @@ func createMateria(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx co
 		Titulo:    newMateria.Titulo,
 	}
 
-	materiaCreada, err := q.CreateMateria(ctx, params)
+	materiaCreada, err := q.CreateMateria(r.Context(), params)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -122,7 +122,7 @@ func createMateria(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx co
 	json.NewEncoder(w).Encode(materiaCreada)
 }
 
-func getListMateriasByUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func getListMateriasByUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
@@ -133,7 +133,7 @@ func getListMateriasByUsuario(w http.ResponseWriter, r *http.Request, q *db.Quer
 
 	id := int32(id64)
 
-	listaMateria, err := q.ListMateriasByUsuario(ctx, id)
+	listaMateria, err := q.ListMateriasByUsuario(r.Context(), id)
 	if err != nil {
 		http.Error(w, "Usuario para listar materias no encontrado", http.StatusNotFound)
 		return
@@ -143,7 +143,7 @@ func getListMateriasByUsuario(w http.ResponseWriter, r *http.Request, q *db.Quer
 	json.NewEncoder(w).Encode(listaMateria)
 }
 
-func putUpdateMateria(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func putUpdateMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var MateriaRecibida db.ListaTarea
 
 	err := json.NewDecoder(r.Body).Decode(&MateriaRecibida)
@@ -164,7 +164,7 @@ func putUpdateMateria(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx
 		Titulo:  MateriaRecibida.Titulo,
 	}
 
-	MateriaActualizada, err := q.UpdateMateria(ctx, params)
+	MateriaActualizada, err := q.UpdateMateria(r.Context(), params)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -174,7 +174,7 @@ func putUpdateMateria(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx
 	json.NewEncoder(w).Encode(MateriaActualizada)
 }
 
-func deleteMateria(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func deleteMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	parsed, err := strconv.ParseInt(idStr, 10, 32)
@@ -185,7 +185,7 @@ func deleteMateria(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx co
 
 	idMateria := int32(parsed)
 
-	err = q.DeleteMateria(ctx, idMateria)
+	err = q.DeleteMateria(r.Context(), idMateria)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -198,7 +198,7 @@ func deleteMateria(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx co
 // 3. OPERACIONES DE TAREA (db.Tarea)
 // ==========================================
 
-func createTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func createTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var newTarea db.Tarea
 
 	err := json.NewDecoder(r.Body).Decode(&newTarea)
@@ -220,7 +220,7 @@ func createTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx cont
 		Descripcion:       newTarea.Descripcion,
 	}
 
-	tareaCreada, err := q.CreateTarea(ctx, params)
+	tareaCreada, err := q.CreateTarea(r.Context(), params)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -231,7 +231,7 @@ func createTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx cont
 	json.NewEncoder(w).Encode(tareaCreada)
 }
 
-func getTareaById(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func getTareaById(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
@@ -242,7 +242,7 @@ func getTareaById(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx con
 
 	id := int32(id64)
 
-	tarea, err := q.GetTareaByID(ctx, id)
+	tarea, err := q.GetTareaByID(r.Context(), id)
 	if err != nil {
 		http.Error(w, "Tarea no encontrada", http.StatusNotFound)
 		return
@@ -252,7 +252,7 @@ func getTareaById(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx con
 	json.NewEncoder(w).Encode(tarea)
 }
 
-func getListTareasByMateria(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func getListTareasByMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
@@ -263,7 +263,7 @@ func getListTareasByMateria(w http.ResponseWriter, r *http.Request, q *db.Querie
 
 	id := int32(id64)
 
-	listaTareas, err := q.ListTareasByMateria(ctx, id)
+	listaTareas, err := q.ListTareasByMateria(r.Context(), id)
 	if err != nil {
 		http.Error(w, "Materia para listar tareas no encontrada", http.StatusNotFound)
 		return
@@ -273,7 +273,7 @@ func getListTareasByMateria(w http.ResponseWriter, r *http.Request, q *db.Querie
 	json.NewEncoder(w).Encode(listaTareas)
 }
 
-func getListTareasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func getListTareasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var tareaRango db.Tarea
 
 	err := json.NewDecoder(r.Body).Decode(&tareaRango)
@@ -287,7 +287,7 @@ func getListTareasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Qu
 		FechaFinalizacion_2: tareaRango.FechaFinalizacion,
 	}
 
-	listaTareas, err := q.ListTareasByRangoFechas(ctx, params)
+	listaTareas, err := q.ListTareasByRangoFechas(r.Context(), params)
 	if err != nil {
 		http.Error(w, "Tareas en rango de fechas no encontradas", http.StatusNotFound)
 		return
@@ -297,7 +297,7 @@ func getListTareasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Qu
 	json.NewEncoder(w).Encode(listaTareas)
 }
 
-func putUpdateTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func putUpdateTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var TareaRecibida db.Tarea
 
 	err := json.NewDecoder(r.Body).Decode(&TareaRecibida)
@@ -322,7 +322,7 @@ func putUpdateTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx c
 		Completada:        TareaRecibida.Completada,
 	}
 
-	TareaActualizada, err := q.UpdateTarea(ctx, params)
+	TareaActualizada, err := q.UpdateTarea(r.Context(), params)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -332,7 +332,7 @@ func putUpdateTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx c
 	json.NewEncoder(w).Encode(TareaActualizada)
 }
 
-func deleteTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func deleteTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	parsed, err := strconv.ParseInt(idStr, 10, 32)
@@ -343,7 +343,7 @@ func deleteTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx cont
 
 	idTarea := int32(parsed)
 
-	err = q.DeleteTarea(ctx, idTarea)
+	err = q.DeleteTarea(r.Context(), idTarea)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -356,7 +356,7 @@ func deleteTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx cont
 // 4. OPERACIONES DE HORAS (db.HorasTrabajada)
 // ==========================================
 
-func createHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func createHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var newHoras db.HorasTrabajada
 
 	err := json.NewDecoder(r.Body).Decode(&newHoras)
@@ -376,7 +376,7 @@ func createHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries
 		TimestampFin:    newHoras.TimestampFin,
 	}
 
-	horasCreadas, err := q.CreateHorasTrabajadas(ctx, params)
+	horasCreadas, err := q.CreateHorasTrabajadas(r.Context(), params)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -387,7 +387,7 @@ func createHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries
 	json.NewEncoder(w).Encode(horasCreadas)
 }
 
-func getListHorasByTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func getListHorasByTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
@@ -398,7 +398,7 @@ func getListHorasByTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, 
 
 	id := int32(id64)
 
-	listaHoras, err := q.ListHorasByTarea(ctx, id)
+	listaHoras, err := q.ListHorasByTarea(r.Context(), id)
 	if err != nil {
 		http.Error(w, "Tarea para listar horas no encontrada", http.StatusNotFound)
 		return
@@ -408,7 +408,7 @@ func getListHorasByTarea(w http.ResponseWriter, r *http.Request, q *db.Queries, 
 	json.NewEncoder(w).Encode(listaHoras)
 }
 
-func getListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func getListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var horasRango db.HorasTrabajada
 
 	err := json.NewDecoder(r.Body).Decode(&horasRango)
@@ -422,7 +422,7 @@ func getListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Que
 		TimestampInicio_2: horasRango.TimestampFin,
 	}
 
-	listaHoras, err := q.ListHorasByRangoFechas(ctx, params)
+	listaHoras, err := q.ListHorasByRangoFechas(r.Context(), params)
 	if err != nil {
 		http.Error(w, "Horas en rango de fechas no encontradas", http.StatusNotFound)
 		return
@@ -432,7 +432,7 @@ func getListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Que
 	json.NewEncoder(w).Encode(listaHoras)
 }
 
-func putUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func putUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var HorasRecibidas db.HorasTrabajada
 
 	err := json.NewDecoder(r.Body).Decode(&HorasRecibidas)
@@ -452,7 +452,7 @@ func putUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Quer
 		TimestampFin:    HorasRecibidas.TimestampFin,
 	}
 
-	HorasActualizadas, err := q.UpdateHorasTrabajadas(ctx, params)
+	HorasActualizadas, err := q.UpdateHorasTrabajadas(r.Context(), params)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -462,7 +462,7 @@ func putUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Quer
 	json.NewEncoder(w).Encode(HorasActualizadas)
 }
 
-func deleteHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries, ctx context.Context) {
+func deleteHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	parsed, err := strconv.ParseInt(idStr, 10, 32)
@@ -473,7 +473,7 @@ func deleteHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries
 
 	idHoras := int32(parsed)
 
-	err = q.DeleteHorasTrabajadas(ctx, idHoras)
+	err = q.DeleteHorasTrabajadas(r.Context(), idHoras)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -510,64 +510,64 @@ func main() {
 	// Handlers que conectan las operaciones crud
 	// Usuarios[cite: 1]
 	http.HandleFunc("POST /usuarios", func(w http.ResponseWriter, r *http.Request) {
-		createUsuario(w, r, queries, ctx)
+		createUsuario(w, r, queries)
 	})
 	http.HandleFunc("GET /usuarios/email/{email}", func(w http.ResponseWriter, r *http.Request) {
-		getUserByEmail(w, r, queries, ctx)
+		getUserByEmail(w, r, queries)
 	})
 	http.HandleFunc("GET /usuarios/{id}", func(w http.ResponseWriter, r *http.Request) {
-		getUserById(w, r, queries, ctx)
+		getUserById(w, r, queries)
 	})
 
 	// Materias[cite: 1]
 	http.HandleFunc("POST /materias", func(w http.ResponseWriter, r *http.Request) {
-		createMateria(w, r, queries, ctx)
+		createMateria(w, r, queries)
 	})
 	http.HandleFunc("GET /materias/{id}", func(w http.ResponseWriter, r *http.Request) {
-		getListMateriasByUsuario(w, r, queries, ctx)
+		getListMateriasByUsuario(w, r, queries)
 	})
 	http.HandleFunc("PUT /materias/{id}", func(w http.ResponseWriter, r *http.Request) {
-		putUpdateMateria(w, r, queries, ctx)
+		putUpdateMateria(w, r, queries)
 	})
 	http.HandleFunc("DELETE /materias/{id}", func(w http.ResponseWriter, r *http.Request) {
-		deleteMateria(w, r, queries, ctx)
+		deleteMateria(w, r, queries)
 	})
 
 	// Tareas[cite: 1]
 	http.HandleFunc("POST /tareas", func(w http.ResponseWriter, r *http.Request) {
-		createTarea(w, r, queries, ctx)
+		createTarea(w, r, queries)
 	})
 	http.HandleFunc("GET /tareas/{id}", func(w http.ResponseWriter, r *http.Request) {
-		getTareaById(w, r, queries, ctx)
+		getTareaById(w, r, queries)
 	})
 	http.HandleFunc("GET /tareas/materia/{id}", func(w http.ResponseWriter, r *http.Request) {
-		getListTareasByMateria(w, r, queries, ctx)
+		getListTareasByMateria(w, r, queries)
 	})
 	http.HandleFunc("GET /tareas/fechas", func(w http.ResponseWriter, r *http.Request) {
-		getListTareasByRangoFechas(w, r, queries, ctx)
+		getListTareasByRangoFechas(w, r, queries)
 	})
 	http.HandleFunc("PUT /tareas/{id}", func(w http.ResponseWriter, r *http.Request) {
-		putUpdateTarea(w, r, queries, ctx)
+		putUpdateTarea(w, r, queries)
 	})
 	http.HandleFunc("DELETE /tareas/{id}", func(w http.ResponseWriter, r *http.Request) {
-		deleteTarea(w, r, queries, ctx)
+		deleteTarea(w, r, queries)
 	})
 
 	// Horas[cite: 1]
 	http.HandleFunc("POST /horas", func(w http.ResponseWriter, r *http.Request) {
-		createHorasTrabajadas(w, r, queries, ctx)
+		createHorasTrabajadas(w, r, queries)
 	})
 	http.HandleFunc("GET /horas/{id}", func(w http.ResponseWriter, r *http.Request) {
-		getListHorasByTarea(w, r, queries, ctx)
+		getListHorasByTarea(w, r, queries)
 	})
 	http.HandleFunc("GET /horas/fechas", func(w http.ResponseWriter, r *http.Request) {
-		getListHorasByRangoFechas(w, r, queries, ctx)
+		getListHorasByRangoFechas(w, r, queries)
 	})
 	http.HandleFunc("PUT /horas/{id}", func(w http.ResponseWriter, r *http.Request) {
-		putUpdateHorasTrabajadas(w, r, queries, ctx)
+		putUpdateHorasTrabajadas(w, r, queries)
 	})
 	http.HandleFunc("DELETE /horas/{id}", func(w http.ResponseWriter, r *http.Request) {
-		deleteHorasTrabajadas(w, r, queries, ctx)
+		deleteHorasTrabajadas(w, r, queries)
 	})
 
 	port := ":8080"
