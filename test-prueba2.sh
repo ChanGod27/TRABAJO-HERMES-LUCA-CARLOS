@@ -31,8 +31,10 @@ echo "5. Ejecutando tests unitarios/integración de Go..."
 go test -v ./...
 
 echo "6. Levantando el servidor HTTP en segundo plano..."
-go run . &
-SERVER_PID=$! # Guardamos el ID del proceso para matarlo en el trap
+# Compilamos un ejecutable temporal en lugar de usar go run
+go build -o test_server_bin .
+./test_server_bin &
+SERVER_PID=$! # Ahora este PID es el de tu servidor exacto
 
 echo "7. Esperando a que el servidor HTTP responda en :8080..."
 until curl -s http://localhost:8080/ > /dev/null 2>&1 \
