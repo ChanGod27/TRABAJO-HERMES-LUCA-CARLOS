@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -40,6 +41,7 @@ func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 
 	userCreated, err := q.CreateUser(r.Context(), params)
 	if err != nil {
+		log.Printf("ERROR BD al crear usuario: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

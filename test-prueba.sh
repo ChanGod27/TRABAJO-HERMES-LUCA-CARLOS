@@ -32,7 +32,7 @@ echo "5. Ejecutando tests unitarios/integración de Go..."
 go test -v ./...
 
 echo "6. Levantando el servidor HTTP en segundo plano..."
-go run . &
+go run . > server.log 2>&1 &
 SERVER_PID=$! # Guardamos el PID del servidor en segundo plano
 
 echo "Esperando a que el servidor HTTP responda en :8080..."
@@ -42,6 +42,6 @@ until curl -s http://localhost:8080/ > /dev/null 2>&1 \
 done
 
 echo "7. Ejecutando tests de API con Hurl..."
-hurl --test request.hurl
+hurl --test --verbose request.hurl
 
 echo "Pruebas finalizadas con éxito."
