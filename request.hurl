@@ -1,5 +1,5 @@
 # requests.hurl 
-# TEST DE CADA ENDPOIN
+# TEST DE CADA ENDPOINT
 
 # 1. createUsuario
 POST http://localhost:8080/usuarios
