@@ -128,4 +128,4 @@ jsonpath "$" count >= 1
 jsonpath "$[0].IDTarea" == 1
 
 # 4. getListTareasByRangoFechas las fechas de finalizacion van a ser entre 2026-10-19T15:30:00" y "2026-12-19T15:30:00"
-GET http://localhost:8080/tareas
+GET http://localhost:8080/tareas/fechas?FechaFinalizacion=2026-10-19T15:30:00&FechaFinalizacion_2=2026-12-19T15:30:00

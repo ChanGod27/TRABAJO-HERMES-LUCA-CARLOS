@@ -9,6 +9,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // ==========================================
@@ -271,17 +274,25 @@ func getListTareasByMateria(w http.ResponseWriter, r *http.Request, q *db.Querie
 }
 
 func getListTareasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
-	var tareaRango db.Tarea
 
-	err := json.NewDecoder(r.Body).Decode(&tareaRango)
+	fechaInicioStr := r.URL.Query().Get("FechaFinalizacion")
+	fechaFinalStr := r.URL.Query().Get("FechaFinalizacion_2")
+
+	fechaInicio, err := time.Parse(time.RFC3339, fechaInicioStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Fecha final inválida", http.StatusBadRequest)
+		return
+	}
+
+	fechaFinal, err := time.Parse(time.RFC3339, fechaFinalStr)
+	if err != nil {
+		http.Error(w, "Fecha final_2 inválida", http.StatusBadRequest)
 		return
 	}
 
 	params := db.ListTareasByRangoFechasParams{
-		FechaFinalizacion:   tareaRango.FechaInicio,
-		FechaFinalizacion_2: tareaRango.FechaFinalizacion,
+		FechaFinalizacion:   pgtype.Timestamp{Time: fechaInicio, Valid: true},
+		FechaFinalizacion_2: pgtype.Timestamp{Time: fechaFinal, Valid: true},
 	}
 
 	listaTareas, err := q.ListTareasByRangoFechas(r.Context(), params)
