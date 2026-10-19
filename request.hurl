@@ -106,3 +106,26 @@ jsonpath "$.Titulo" == "trabajoPracticoMongo"
 jsonpath "$.FechaInicio" == "2026-10-19T15:30:00"
 jsonpath "$.FechaFinalizacion" == "2026-11-19T15:30:00"
 jsonpath "$.Descripcion" == "Trabajo practico de prueba de bases NoSQL"
+
+# 2. getTareaById obtenemos la tarea con el id 1
+GET http://localhost:8080/tareas/1 
+HTTP 200
+[Asserts]
+jsonpath "$.IDTarea" == 1 
+jsonpath "$.IDLista" == 1 
+jsonpath "$.Titulo" == "trabajoPracticoMongo"
+jsonpath "$.FechaInicio" == "2026-10-19T15:30:00"
+jsonpath "$.FechaFinalizacion" == "2026-11-19T15:30:00"
+jsonpath "$.Descripcion" == "Trabajo practico de prueba de bases NoSQL"
+jsonpath "$.Completada" == false 
+
+
+# 3. getListTareasByMateria obtenemos las tareas de la materia 1 
+GET http://localhost:8080/tareas/materia/1 
+HTTP 200
+[Asserts]
+jsonpath "$" count >= 1
+jsonpath "$[0].IDTarea" == 1
+
+# 4. getListTareasByRangoFechas las fechas de finalizacion van a ser entre 2026-10-19T15:30:00" y "2026-12-19T15:30:00"
+GET http://localhost:8080/tareas

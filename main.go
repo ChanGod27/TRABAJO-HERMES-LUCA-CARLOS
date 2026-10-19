@@ -244,6 +244,7 @@ func getTareaById(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(tarea)
 }
 
@@ -265,6 +266,7 @@ func getListTareasByMateria(w http.ResponseWriter, r *http.Request, q *db.Querie
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(listaTareas)
 }
 
@@ -289,6 +291,7 @@ func getListTareasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Qu
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(listaTareas)
 }
 
