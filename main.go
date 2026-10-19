@@ -420,17 +420,24 @@ func getListHorasByTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) 
 }
 
 func getListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
-	var horasRango db.HorasTrabajada
+	TimestampInicio := r.URL.Query().Get("TimestampInicio")
+	TimestampInicio_2 := r.URL.Query().Get("TimestampInicio_2")
 
-	err := json.NewDecoder(r.Body).Decode(&horasRango)
+	timestampInicio, err := time.Parse(time.RFC3339, TimestampInicio)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Timestamp de inicio inválida", http.StatusBadRequest)
+		return
+	}
+
+	timestampInicio_2, err := time.Parse(time.RFC3339, TimestampInicio_2)
+	if err != nil {
+		http.Error(w, "Timestamp de inicio_2 inválida", http.StatusBadRequest)
 		return
 	}
 
 	params := db.ListHorasByRangoFechasParams{
-		TimestampInicio:   horasRango.TimestampInicio,
-		TimestampInicio_2: horasRango.TimestampFin,
+		TimestampInicio:   pgtype.Timestamp{Time: timestampInicio, Valid: true},
+		TimestampInicio_2: pgtype.Timestamp{Time: timestampInicio_2, Valid: true},
 	}
 
 	listaHoras, err := q.ListHorasByRangoFechas(r.Context(), params)
@@ -440,6 +447,7 @@ func getListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Que
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(listaHoras)
 }
 
