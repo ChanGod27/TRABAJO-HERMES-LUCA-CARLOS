@@ -83,26 +83,28 @@ Es una sub-entidad que registra los bloques temporales dedicados efectivamente a
 
 ## 4. Matriz de Operaciones CRUD y Propósito en el Dominio
 
-| Entidad     | Operación SQLC            | Propósito en la Aplicación                                                              |
-| :---------- | :------------------------ | :-------------------------------------------------------------------------------------- |
-| **Usuario** | `CreateUser`              | Registro de una nueva cuenta con validación de email único.                             |
-|             | `GetUserByEmail`          | Búsqueda para autenticación.                                                            |
-|             | `GetUserByID`             | Carga de perfil del usuario logueado.                                                   |
-| **Materia** | `CreateMateria`           | Creación de una nueva columna en el tablero.                                            |
-|             | `ListMateriasByUsuario`   | Renderizado de las columnas del tablero del usuario activo.                             |
-|             | `UpdateMateria`           | Edición del nombre de la columna.                                                       |
-|             | `DeleteMateria`           | Eliminación de una materia y todo su contenido.                                         |
-| **Tarea**   | `CreateTarea`             | Creación de tarea rápida desde columna o modal de calendario.                           |
-|             | `GetTareaByID`            | Consulta completa de detalles para abrir modal de edición/historial.                    |
-|             | `ListTareasByMateria`     | Poblado de tarjetas dentro de una columna específica.                                   |
-|             | `ListTareasByRangoFechas` | Alimentación de eventos para las vistas semanal/mensual del calendario.                 |
-|             | `UpdateTarea`             | Actualización completa (marcar/desmarcar checkbox, aplazar fecha de fin, editar texto). |
-|             | `DeleteTarea`             | Eliminación de tareas descartadas o completadas.                                        |
-| **Horas**   | `CreateHorasTrabajadas`   | Guardado automático al frenar el cronómetro o carga manual de tiempo.                   |
-|             | `ListHorasByTarea`        | Historial de sesiones registradas para una tarea específica.                            |
-|             | `ListHorasByRangoFechas`  | Cálculo de horas invertidas para paneles de estadística y bloques de tiempo.            |
-|             | `UpdateHorasTrabajadas`   | Corrección manual de horarios en caso de olvido al apagar el cronómetro.                |
-|             | `DeleteHorasTrabajadas`   | Eliminación de sesiones cargadas por error.                                             |
+| Entidad | Operación SQLC | URL (Endpoint) | Propósito en la Aplicación |
+| :--- | :--- | :--- | :--- |
+| **Usuario** | `CreateUser` | `POST /usuarios` | Registro de una nueva cuenta con validación de email único. |
+| | `GetUserByEmail` | `GET /usuarios?email={email}` | Búsqueda para autenticación. |
+| | `GetUserByID` | `GET /usuarios/{id}` | Carga de perfil del usuario logueado. |
+| **Materia** | `CreateMateria` | `POST /materias` | Creación de una nueva columna en el tablero. |
+| | `ListMateriasByUsuario` | `GET /materias?usuario_id={id}` | Renderizado de las columnas del tablero del usuario activo. |
+| | `UpdateMateria` | `PUT /materias/{id}` | Edición del nombre de la columna. |
+| | `DeleteMateria` | `DELETE /materias/{id}` | Eliminación de una materia y todo su contenido. |
+| **Tarea** | `CreateTarea` | `POST /tareas` | Creación de tarea rápida desde columna o modal de calendario. |
+| | `GetTareaByID` | `GET /tareas/{id}` | Consulta completa de detalles para abrir modal de edición/historial. |
+| | `ListTareasByMateria` | `GET /tareas?materia_id={id}` | Poblado de tarjetas dentro de una columna específica. |
+| | `ListTareasByRangoFechas` | `GET /tareas?FechaFinalizacion={f1}&FechaFinalizacion_2={f2}` | Alimentación de eventos para las vistas semanal/mensual del calendario. |
+| | `UpdateTarea` | `PUT /tareas/{id}` | Actualización completa (marcar/desmarcar checkbox, aplazar fecha de fin, editar texto). |
+| | `DeleteTarea` | `DELETE /tareas/{id}` | Eliminación de tareas descartadas o completadas. |
+| **Horas** | `CreateHorasTrabajadas` | `POST /horas` | Guardado automático al frenar el cronómetro o carga manual de tiempo. |
+| | `ListHorasByTarea` | `GET /horas?tarea_id={id}` | Historial de sesiones registradas para una tarea específica. |
+| | `ListHorasByRangoFechas` | `GET /horas?FechaInicio={f1}&FechaInicio_2={f2}` | Cálculo de horas invertidas para paneles de estadística y bloques de tiempo. |
+| | `UpdateHorasTrabajadas` | `PUT /horas/{id}` | Corrección manual de horarios en caso de olvido al apagar el cronómetro. |
+| | `DeleteHorasTrabajadas` | `DELETE /horas/{id}` | Eliminación de sesiones cargadas por error. |
+
+
 
 ---
 
