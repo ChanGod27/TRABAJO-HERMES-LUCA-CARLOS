@@ -127,5 +127,59 @@ HTTP 200
 jsonpath "$" count >= 1
 jsonpath "$[0].IDTarea" == 1
 
-# 4. getListTareasByRangoFechas las fechas de finalizacion van a ser entre 2026-10-19T15:30:00" y "2026-12-19T15:30:00"
-GET http://localhost:8080/tareas/fechas?FechaFinalizacion=2026-10-19T15:30:00&FechaFinalizacion_2=2026-12-19T15:30:00
+# 4. getListTareasByRangoFechas
+GET http://localhost:8080/tareas/fechas?FechaFinalizacion=2026-10-19T15:30:00Z&FechaFinalizacion_2=2026-12-19T15:30:00Z
+HTTP 200
+[Asserts]
+jsonpath "$" count >= 1
+jsonpath "$[0].IDTarea" == 1
+
+
+# 5. putUpdateTarea con el idTarea 1
+PUT http://localhost:8080/tareas/1
+Content-Type: application/json
+
+{
+    "IDTarea": 1,
+    "IDLista": 1,
+    "Titulo": "trabajoPracticoMongoSQL",
+    "FechaInicio": "2026-10-19T15:30:00Z",
+    "FechaFinalizacion": "2026-11-19T15:30:00Z",
+    "Descripcion": "Trabajo practico de prueba de bases NoSQL",
+    "Completada": true
+}
+
+HTTP 200
+[Asserts]
+jsonpath "$.IDTarea" == 1 
+jsonpath "$.IDLista" == 1 
+jsonpath "$.Titulo" == "trabajoPracticoMongoSQL"
+jsonpath "$.FechaInicio" == "2026-10-19T15:30:00"
+jsonpath "$.FechaFinalizacion" == "2026-11-19T15:30:00"
+jsonpath "$.Descripcion" == "Trabajo practico de prueba de bases NoSQL"
+jsonpath "$.Completada" == true 
+
+
+#TABLA horasTrabajadas 
+
+# 1. createHorasTrabajadas
+POST http://localhost:8080/horas
+Content-Type: application/json
+
+{
+    "IDTarea": 1,
+    "TimestampInicio": "2026-10-19T15:30:00Z",
+    "TimestampFin":  "2026-11-19T15:30:00Z"
+}
+
+HTTP 201
+[Asserts]
+jsonpath "$.IDHoras" == 1
+jsonpath "$.IDTarea" == 1
+jsonpath "$.TimestampInicio" == "2026-10-19T15:30:00"
+jsonpath "$.TimestampFin" == "2026-11-19T15:30:00"
+
+# 2. getListHorasByTarea con idTarea 1 
+GET http://localhost:8080/horas/1 
+
+
