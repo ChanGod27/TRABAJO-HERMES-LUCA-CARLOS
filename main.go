@@ -88,6 +88,7 @@ func getUserById(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(newUsuario)
 }
 
@@ -96,7 +97,7 @@ func getUserById(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 // ==========================================
 
 func createMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
-	var newMateria db.ListaTarea
+	var newMateria db.CreateMateriaParams
 
 	err := json.NewDecoder(r.Body).Decode(&newMateria)
 	if err != nil {
@@ -109,12 +110,7 @@ func createMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 		return
 	}
 
-	params := db.CreateMateriaParams{
-		IDUsuario: newMateria.IDUsuario,
-		Titulo:    newMateria.Titulo,
-	}
-
-	materiaCreada, err := q.CreateMateria(r.Context(), params)
+	materiaCreada, err := q.CreateMateria(r.Context(), newMateria)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -143,11 +139,12 @@ func getListMateriasByUsuario(w http.ResponseWriter, r *http.Request, q *db.Quer
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(listaMateria)
 }
 
 func putUpdateMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
-	var MateriaRecibida db.ListaTarea
+	var MateriaRecibida db.UpdateMateriaParams
 
 	err := json.NewDecoder(r.Body).Decode(&MateriaRecibida)
 	if err != nil {
@@ -156,24 +153,19 @@ func putUpdateMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	}
 
 	if strings.TrimSpace(MateriaRecibida.Titulo) == "" ||
-		MateriaRecibida.IDLista <= 0 ||
-		MateriaRecibida.IDUsuario <= 0 {
+		MateriaRecibida.IDLista <= 0 {
 		http.Error(w, "Todos los campos son obligatorios y no pueden contener solo espacios", http.StatusBadRequest)
 		return
 	}
 
-	params := db.UpdateMateriaParams{
-		IDLista: MateriaRecibida.IDLista,
-		Titulo:  MateriaRecibida.Titulo,
-	}
-
-	MateriaActualizada, err := q.UpdateMateria(r.Context(), params)
+	MateriaActualizada, err := q.UpdateMateria(r.Context(), MateriaRecibida)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(MateriaActualizada)
 }
 
