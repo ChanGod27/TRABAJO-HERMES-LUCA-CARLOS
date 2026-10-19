@@ -141,7 +141,6 @@ Content-Type: application/json
 
 {
     "IDTarea": 1,
-    "IDLista": 1,
     "Titulo": "trabajoPracticoMongoSQL",
     "FechaInicio": "2026-10-19T15:30:00Z",
     "FechaFinalizacion": "2026-11-19T15:30:00Z",

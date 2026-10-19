@@ -19,7 +19,7 @@ import (
 // ==========================================
 
 func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries) {
-	var newUsuario db.Usuario
+	var newUsuario db.CreateUserParams
 
 	err := json.NewDecoder(r.Body).Decode(&newUsuario)
 	if err != nil {
@@ -35,14 +35,7 @@ func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 		return
 	}
 
-	params := db.CreateUserParams{
-		Nombre:     newUsuario.Nombre,
-		Apellido:   newUsuario.Apellido,
-		Email:      newUsuario.Email,
-		Contrasena: newUsuario.Contrasena,
-	}
-
-	userCreated, err := q.CreateUser(r.Context(), params)
+	userCreated, err := q.CreateUser(r.Context(), newUsuario)
 	if err != nil {
 		log.Printf("ERROR BD al crear usuario: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -197,7 +190,7 @@ func deleteMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 // ==========================================
 
 func createTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
-	var newTarea db.Tarea
+	var newTarea db.CreateTareaParams
 
 	err := json.NewDecoder(r.Body).Decode(&newTarea)
 	if err != nil {
@@ -210,15 +203,7 @@ func createTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 		return
 	}
 
-	params := db.CreateTareaParams{
-		IDLista:           newTarea.IDLista,
-		Titulo:            newTarea.Titulo,
-		FechaInicio:       newTarea.FechaInicio,
-		FechaFinalizacion: newTarea.FechaFinalizacion,
-		Descripcion:       newTarea.Descripcion,
-	}
-
-	tareaCreada, err := q.CreateTarea(r.Context(), params)
+	tareaCreada, err := q.CreateTarea(r.Context(), newTarea)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -307,7 +292,7 @@ func getListTareasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Qu
 }
 
 func putUpdateTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
-	var TareaRecibida db.Tarea
+	var TareaRecibida db.UpdateTareaParams
 
 	err := json.NewDecoder(r.Body).Decode(&TareaRecibida)
 	if err != nil {
@@ -316,22 +301,12 @@ func putUpdateTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	}
 
 	if strings.TrimSpace(TareaRecibida.Titulo) == "" ||
-		TareaRecibida.IDTarea <= 0 ||
-		TareaRecibida.IDLista <= 0 {
+		TareaRecibida.IDTarea <= 0 {
 		http.Error(w, "Todos los campos son obligatorios y no pueden contener solo espacios", http.StatusBadRequest)
 		return
 	}
 
-	params := db.UpdateTareaParams{
-		IDTarea:           TareaRecibida.IDTarea,
-		Titulo:            TareaRecibida.Titulo,
-		FechaInicio:       TareaRecibida.FechaInicio,
-		FechaFinalizacion: TareaRecibida.FechaFinalizacion,
-		Descripcion:       TareaRecibida.Descripcion,
-		Completada:        TareaRecibida.Completada,
-	}
-
-	TareaActualizada, err := q.UpdateTarea(r.Context(), params)
+	TareaActualizada, err := q.UpdateTarea(r.Context(), TareaRecibida)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -367,7 +342,7 @@ func deleteTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 // ==========================================
 
 func createHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
-	var newHoras db.HorasTrabajada
+	var newHoras db.CreateHorasTrabajadasParams
 
 	err := json.NewDecoder(r.Body).Decode(&newHoras)
 	if err != nil {
@@ -380,13 +355,7 @@ func createHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries
 		return
 	}
 
-	params := db.CreateHorasTrabajadasParams{
-		IDTarea:         newHoras.IDTarea,
-		TimestampInicio: newHoras.TimestampInicio,
-		TimestampFin:    newHoras.TimestampFin,
-	}
-
-	horasCreadas, err := q.CreateHorasTrabajadas(r.Context(), params)
+	horasCreadas, err := q.CreateHorasTrabajadas(r.Context(), newHoras)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -452,7 +421,7 @@ func getListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Que
 }
 
 func putUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
-	var HorasRecibidas db.HorasTrabajada
+	var HorasRecibidas db.UpdateHorasTrabajadasParams
 
 	err := json.NewDecoder(r.Body).Decode(&HorasRecibidas)
 	if err != nil {
@@ -465,13 +434,7 @@ func putUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Quer
 		return
 	}
 
-	params := db.UpdateHorasTrabajadasParams{
-		IDHoras:         HorasRecibidas.IDHoras,
-		TimestampInicio: HorasRecibidas.TimestampInicio,
-		TimestampFin:    HorasRecibidas.TimestampFin,
-	}
-
-	HorasActualizadas, err := q.UpdateHorasTrabajadas(r.Context(), params)
+	HorasActualizadas, err := q.UpdateHorasTrabajadas(r.Context(), HorasRecibidas)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
