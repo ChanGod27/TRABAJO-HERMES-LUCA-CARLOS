@@ -186,3 +186,46 @@ HTTP 200
 jsonpath "$" count >= 1
 jsonpath "$[0].IDHoras" == 1
 
+
+# 3. getListHorasByRangoFechas
+GET http://localhost:8080/horas/fechas?FechaInicio=2026-10-19T15:30:00Z&FechaInicio_2=2026-12-19T15:30:00Z
+HTTP 200
+[Asserts]
+jsonpath "$" count >= 1
+jsonpath "$[0].IDHoras" == 1
+
+
+# 4. putUpdateHorasTrabajadas con el IDHoras 1
+PUT http://localhost:8080/horas/1
+Content-Type: application/json
+
+{
+    "IDHoras": 1,
+    "TimestampInicio": "2026-10-19T15:30:00Z",
+    "TimestampFin":  "2026-12-19T15:30:00Z"
+}
+
+HTTP 200
+[Asserts]
+jsonpath "$.IDHoras" == 1
+jsonpath "$.IDTarea" == 1
+jsonpath "$.TimestampInicio" == "2026-10-19T15:30:00"
+jsonpath "$.TimestampFin" == "2026-12-19T15:30:00"
+
+
+#Todos los delete 
+
+# 1. deleteHorasTrabajadas
+DELETE http://localhost:8080/horas/1
+HTTP 204
+
+# 2. deleteTarea
+DELETE http://localhost:8080/tareas/1
+HTTP 204
+
+#3. deleteMateria
+DELETE http://localhost:8080/materias/1
+HTTP 204
+
+
+

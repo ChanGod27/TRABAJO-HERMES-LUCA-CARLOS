@@ -460,7 +460,7 @@ func putUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Quer
 		return
 	}
 
-	if HorasRecibidas.IDHoras <= 0 || HorasRecibidas.IDTarea <= 0 {
+	if HorasRecibidas.IDHoras <= 0 {
 		http.Error(w, "Todos los campos de ID son obligatorios", http.StatusBadRequest)
 		return
 	}
@@ -478,6 +478,7 @@ func putUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Quer
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(HorasActualizadas)
 }
 
