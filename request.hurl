@@ -181,5 +181,8 @@ jsonpath "$.TimestampFin" == "2026-11-19T15:30:00"
 
 # 2. getListHorasByTarea con idTarea 1 
 GET http://localhost:8080/horas/1 
-
+HTTP 200
+[Asserts]
+jsonpath "$" count >= 1
+jsonpath "$[0].IDHoras" == 1
 
