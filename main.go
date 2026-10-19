@@ -420,8 +420,8 @@ func getListHorasByTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) 
 }
 
 func getListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
-	TimestampInicio := r.URL.Query().Get("TimestampInicio")
-	TimestampInicio_2 := r.URL.Query().Get("TimestampInicio_2")
+	TimestampInicio := r.URL.Query().Get("FechaInicio")
+	TimestampInicio_2 := r.URL.Query().Get("FechaInicio_2")
 
 	timestampInicio, err := time.Parse(time.RFC3339, TimestampInicio)
 	if err != nil {
