@@ -66,6 +66,7 @@ func getUserByEmail(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(newUsuario)
 }
 
@@ -510,7 +511,7 @@ func main() {
 	http.Handle("/", fileServer)
 
 	// Handlers que conectan las operaciones crud
-	// Usuarios[cite: 1]
+	// Usuarios
 	http.HandleFunc("POST /usuarios", func(w http.ResponseWriter, r *http.Request) {
 		createUsuario(w, r, queries)
 	})
@@ -521,7 +522,7 @@ func main() {
 		getUserById(w, r, queries)
 	})
 
-	// Materias[cite: 1]
+	// Materias
 	http.HandleFunc("POST /materias", func(w http.ResponseWriter, r *http.Request) {
 		createMateria(w, r, queries)
 	})
@@ -535,7 +536,7 @@ func main() {
 		deleteMateria(w, r, queries)
 	})
 
-	// Tareas[cite: 1]
+	// Tareas
 	http.HandleFunc("POST /tareas", func(w http.ResponseWriter, r *http.Request) {
 		createTarea(w, r, queries)
 	})
@@ -555,7 +556,7 @@ func main() {
 		deleteTarea(w, r, queries)
 	})
 
-	// Horas[cite: 1]
+	// Horas
 	http.HandleFunc("POST /horas", func(w http.ResponseWriter, r *http.Request) {
 		createHorasTrabajadas(w, r, queries)
 	})
