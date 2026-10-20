@@ -9,5 +9,5 @@ Primero hay que dar permiso de ejecucion al archivo test.sh ---> chmod +x test.s
 
 Luego hay dos formas de ejecutar:  
 
-- "makefile test" 
+- "make test"
 - "./test.sh" 
