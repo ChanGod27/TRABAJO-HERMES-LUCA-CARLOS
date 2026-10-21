@@ -99,7 +99,7 @@ Es una sub-entidad que registra los bloques temporales dedicados efectivamente a
 | | `UpdateTarea` | `PUT /tareas/{id}` | Actualización completa (marcar/desmarcar checkbox, aplazar fecha de fin, editar texto). |
 | | `DeleteTarea` | `DELETE /tareas/{id}` | Eliminación de tareas descartadas o completadas. |
 | **Horas** | `CreateHorasTrabajadas` | `POST /horas` | Guardado automático al frenar el cronómetro o carga manual de tiempo. |
-| | `ListHorasByTarea` | `GET /horas?tarea_id={id}` | Historial de sesiones registradas para una tarea específica. |
+| | `ListHorasByTarea` | `GET /horas/{tarea_id}` | Historial de sesiones registradas para una tarea específica. |
 | | `ListHorasByRangoFechas` | `GET /horas?FechaInicio={f1}&FechaInicio_2={f2}` | Cálculo de horas invertidas para paneles de estadística y bloques de tiempo. |
 | | `UpdateHorasTrabajadas` | `PUT /horas/{id}` | Corrección manual de horarios en caso de olvido al apagar el cronómetro. |
 | | `DeleteHorasTrabajadas` | `DELETE /horas/{id}` | Eliminación de sesiones cargadas por error. |
