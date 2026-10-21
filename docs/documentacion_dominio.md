@@ -89,12 +89,12 @@ Es una sub-entidad que registra los bloques temporales dedicados efectivamente a
 | | `GetUserByEmail` | `GET /usuarios?email={email}` | Búsqueda para autenticación. |
 | | `GetUserByID` | `GET /usuarios/{id}` | Carga de perfil del usuario logueado. |
 | **Materia** | `CreateMateria` | `POST /materias` | Creación de una nueva columna en el tablero. |
-| | `ListMateriasByUsuario` | `GET /materias?usuario_id={id}` | Renderizado de las columnas del tablero del usuario activo. |
+| | `ListMateriasByUsuario` | `GET /materias/{usuario_id}` | Renderizado de las columnas del tablero del usuario activo. |
 | | `UpdateMateria` | `PUT /materias/{id}` | Edición del nombre de la columna. |
 | | `DeleteMateria` | `DELETE /materias/{id}` | Eliminación de una materia y todo su contenido. |
 | **Tarea** | `CreateTarea` | `POST /tareas` | Creación de tarea rápida desde columna o modal de calendario. |
 | | `GetTareaByID` | `GET /tareas/{id}` | Consulta completa de detalles para abrir modal de edición/historial. |
-| | `ListTareasByMateria` | `GET /tareas?materia_id={id}` | Poblado de tarjetas dentro de una columna específica. |
+| | `ListTareasByMateria` | `GET /tareas/materia/{materia_id}` | Poblado de tarjetas dentro de una columna específica. |
 | | `ListTareasByRangoFechas` | `GET /tareas?FechaFinalizacion={f1}&FechaFinalizacion_2={f2}` | Alimentación de eventos para las vistas semanal/mensual del calendario. |
 | | `UpdateTarea` | `PUT /tareas/{id}` | Actualización completa (marcar/desmarcar checkbox, aplazar fecha de fin, editar texto). |
 | | `DeleteTarea` | `DELETE /tareas/{id}` | Eliminación de tareas descartadas o completadas. |
