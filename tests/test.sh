@@ -5,7 +5,7 @@ set -e
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-# Función de limpieza: apaga la DB, mata el servidor Go y limpia binarios temporales
+# Función de limpieza
 cleanup() {
     echo "Limpiando servidor y contenedores..."
     if [ -n "$SERVER_PID" ]; then
@@ -15,27 +15,35 @@ cleanup() {
     docker compose down -v
 }
 
+esperar_db() {
+    echo "Esperando a que la base de datos esté lista (Healthcheck)..."
+    until [ "$(docker inspect -f '{{.State.Health.Status}}' $(docker compose ps -q db) 2>/dev/null)" = "healthy" ]; do
+        sleep 1
+    done
+}
+
+# Registramos la función de limpieza ante cualquier salida o error
+trap cleanup EXIT
+
 echo "1. Limpiando contenedores y volúmenes previos..."
 docker compose down -v --remove-orphans
 
 echo "2. Generando código con sqlc..."
 sqlc generate
 
-echo "3. Levantando base de datos..."
+echo "3. Levantando base de datos para tests unitarios..."
 docker compose up -d
+esperar_db
 
-# Registramos la función de limpieza
-trap cleanup EXIT
+echo "4. Ejecutando tests unitarios/integración de Go (sin cache)..."
+go test -v -count=1 ./...
 
-echo "4. Esperando a que la base de datos esté lista (Healthcheck)..."
-until [ "$(docker inspect -f '{{.State.Health.Status}}' $(docker compose ps -q db) 2>/dev/null)" = "healthy" ]; do
-    sleep 1
-done
+echo "5. Reiniciando base de datos limpia para tests de API..."
+docker compose down -v
+docker compose up -d
+esperar_db
 
-echo "5. Ejecutando tests unitarios/integración de Go..."
-go test -v ./...
-
-echo "6. Levantando el servidor HTTP en segundo plano..."
+echo "6. Compilando y levantando el servidor HTTP en segundo plano..."
 mkdir -p bin
 go build -o bin/test_server_bin .
 ./bin/test_server_bin &
