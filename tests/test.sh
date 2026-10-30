@@ -1,12 +1,17 @@
 #!/bin/bash
 set -e
 
-# Función de limpieza mejorada: apaga la DB y mata el servidor Go
+# Asegura que el script siempre se ejecute parado en la raíz del proyecto
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$PROJECT_ROOT"
+
+# Función de limpieza: apaga la DB, mata el servidor Go y limpia binarios temporales
 cleanup() {
     echo "Limpiando servidor y contenedores..."
     if [ -n "$SERVER_PID" ]; then
         kill "$SERVER_PID" 2>/dev/null || true
     fi
+    rm -f bin/test_server_bin
     docker compose down -v
 }
 
@@ -19,7 +24,7 @@ sqlc generate
 echo "3. Levantando base de datos..."
 docker compose up -d
 
-# Registramos la nueva función de limpieza
+# Registramos la función de limpieza
 trap cleanup EXIT
 
 echo "4. Esperando a que la base de datos esté lista (Healthcheck)..."
@@ -31,10 +36,10 @@ echo "5. Ejecutando tests unitarios/integración de Go..."
 go test -v ./...
 
 echo "6. Levantando el servidor HTTP en segundo plano..."
-# Compilamos un ejecutable temporal en lugar de usar go run
-go build -o test_server_bin .
-./test_server_bin &
-SERVER_PID=$! # Ahora este PID es el de tu servidor exacto
+mkdir -p bin
+go build -o bin/test_server_bin .
+./bin/test_server_bin &
+SERVER_PID=$!
 
 echo "7. Esperando a que el servidor HTTP responda en :8080..."
 until curl -s http://localhost:8080/ > /dev/null 2>&1 \
@@ -43,6 +48,6 @@ until curl -s http://localhost:8080/ > /dev/null 2>&1 \
 done
 
 echo "8. Ejecutando tests de API con Hurl..."
-hurl --test request.hurl
+hurl --test tests/request.hurl
 
 echo "Pruebas finalizadas con éxito."
