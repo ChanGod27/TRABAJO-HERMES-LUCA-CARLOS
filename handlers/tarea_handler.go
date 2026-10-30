@@ -15,7 +15,7 @@ import (
 // OPERACIONES DE TAREA (db.Tarea)
 // ==========================================
 
-func createTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func CreateTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var newTarea db.CreateTareaParams
 
 	err := json.NewDecoder(r.Body).Decode(&newTarea)
@@ -40,7 +40,7 @@ func createTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	json.NewEncoder(w).Encode(tareaCreada)
 }
 
-func getTareaById(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func GetTareaById(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
@@ -62,7 +62,7 @@ func getTareaById(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	json.NewEncoder(w).Encode(tarea)
 }
 
-func getListTareasByMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func GetListTareasByMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
@@ -84,7 +84,7 @@ func getListTareasByMateria(w http.ResponseWriter, r *http.Request, q *db.Querie
 	json.NewEncoder(w).Encode(listaTareas)
 }
 
-func getListTareasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func GetListTareasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 
 	fechaInicioStr := r.URL.Query().Get("FechaFinalizacion")
 	fechaFinalStr := r.URL.Query().Get("FechaFinalizacion_2")
@@ -117,7 +117,7 @@ func getListTareasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Qu
 	json.NewEncoder(w).Encode(listaTareas)
 }
 
-func putUpdateTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func PutUpdateTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var TareaRecibida db.UpdateTareaParams
 
 	err := json.NewDecoder(r.Body).Decode(&TareaRecibida)
@@ -143,7 +143,7 @@ func putUpdateTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	json.NewEncoder(w).Encode(TareaActualizada)
 }
 
-func deleteTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func DeleteTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	parsed, err := strconv.ParseInt(idStr, 10, 32)

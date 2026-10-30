@@ -12,7 +12,7 @@ import (
 // OPERACIONES DE MATERIA (db.ListaTarea)
 // ==========================================
 
-func createMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func CreateMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var newMateria db.CreateMateriaParams
 
 	err := json.NewDecoder(r.Body).Decode(&newMateria)
@@ -37,7 +37,7 @@ func createMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	json.NewEncoder(w).Encode(materiaCreada)
 }
 
-func getListMateriasByUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func GetListMateriasByUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
@@ -59,7 +59,7 @@ func getListMateriasByUsuario(w http.ResponseWriter, r *http.Request, q *db.Quer
 	json.NewEncoder(w).Encode(listaMateria)
 }
 
-func putUpdateMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func PutUpdateMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var MateriaRecibida db.UpdateMateriaParams
 
 	err := json.NewDecoder(r.Body).Decode(&MateriaRecibida)
@@ -85,7 +85,7 @@ func putUpdateMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	json.NewEncoder(w).Encode(MateriaActualizada)
 }
 
-func deleteMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func DeleteMateria(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	parsed, err := strconv.ParseInt(idStr, 10, 32)

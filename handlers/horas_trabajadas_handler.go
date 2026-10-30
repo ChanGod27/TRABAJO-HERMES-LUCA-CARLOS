@@ -14,7 +14,7 @@ import (
 // 4. OPERACIONES DE HORAS (db.HorasTrabajada)
 // ==========================================
 
-func createHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func CreateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var newHoras db.CreateHorasTrabajadasParams
 
 	err := json.NewDecoder(r.Body).Decode(&newHoras)
@@ -39,7 +39,7 @@ func createHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries
 	json.NewEncoder(w).Encode(horasCreadas)
 }
 
-func getListHorasByTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func GetListHorasByTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
@@ -61,7 +61,7 @@ func getListHorasByTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) 
 	json.NewEncoder(w).Encode(listaHoras)
 }
 
-func getListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func GetListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	TimestampInicio := r.URL.Query().Get("FechaInicio")
 	TimestampInicio_2 := r.URL.Query().Get("FechaInicio_2")
 
@@ -93,7 +93,7 @@ func getListHorasByRangoFechas(w http.ResponseWriter, r *http.Request, q *db.Que
 	json.NewEncoder(w).Encode(listaHoras)
 }
 
-func putUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func PutUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var HorasRecibidas db.UpdateHorasTrabajadasParams
 
 	err := json.NewDecoder(r.Body).Decode(&HorasRecibidas)
@@ -118,7 +118,7 @@ func putUpdateHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Quer
 	json.NewEncoder(w).Encode(HorasActualizadas)
 }
 
-func deleteHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func DeleteHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	parsed, err := strconv.ParseInt(idStr, 10, 32)

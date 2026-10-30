@@ -13,7 +13,7 @@ import (
 // OPERACIONES DE USUARIO
 // ==========================================
 
-func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func CreateUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	var newUsuario db.CreateUserParams
 
 	err := json.NewDecoder(r.Body).Decode(&newUsuario)
@@ -42,7 +42,7 @@ func createUsuario(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	json.NewEncoder(w).Encode(userCreated)
 }
 
-func getUserByEmail(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func GetUserByEmail(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	email := r.PathValue("email")
 
 	if strings.TrimSpace(email) == "" {
@@ -61,7 +61,7 @@ func getUserByEmail(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	json.NewEncoder(w).Encode(newUsuario)
 }
 
-func getUserById(w http.ResponseWriter, r *http.Request, q *db.Queries) {
+func GetUserById(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 	idStr := r.PathValue("id")
 
 	id64, err := strconv.ParseInt(idStr, 10, 32)
