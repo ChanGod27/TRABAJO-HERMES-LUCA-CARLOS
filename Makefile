@@ -1,7 +1,7 @@
 .PHONY: test clean generate
 
 test:
-	./test/test.sh
+	./tests/test.sh
 
 clean:
 	docker compose down -v --remove-orphans
