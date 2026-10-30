@@ -338,7 +338,7 @@ func deleteTarea(w http.ResponseWriter, r *http.Request, q *db.Queries) {
 }
 
 // ==========================================
-// 4. OPERACIONES DE HORAS (db.HorasTrabajada)
+// 4. OPERACIONES DE HORAS (db.HorasTrabajadas)
 // ==========================================
 
 func createHorasTrabajadas(w http.ResponseWriter, r *http.Request, q *db.Queries) {
@@ -475,7 +475,8 @@ func main() {
 
 	connStr := "postgres://trabajo_web:carlos-luca-hermes@localhost:5432/go_tasks_db?sslmode=disable"
 
-	conn, errOpen := abridDB(ctx, connStr)
+	conn, errOpen := db.AbridDB(ctx, connStr)
+
 	if errOpen != nil {
 		fmt.Printf("error crítico al conectar a la base de datos: %v", errOpen)
 		return

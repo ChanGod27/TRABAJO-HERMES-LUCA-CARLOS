@@ -1,7 +1,6 @@
-package main
+package db
 
 import (
-	"ServidorEntregable/db"
 	"context"
 	"errors"
 	"testing"
@@ -16,31 +15,31 @@ func TestQueries_CRUD(t *testing.T) {
 
 	connStr := "postgres://trabajo_web:carlos-luca-hermes@localhost:5432/go_tasks_db?sslmode=disable"
 
-	conn, errOpen := abridDB(ctx, connStr)
+	conn, errOpen := AbridDB(ctx, connStr)
 	if errOpen != nil {
 		t.Fatalf("error crítico al conectar a la base de datos: %v", errOpen)
 	}
 	defer conn.Close(ctx)
 
-	queries := db.New(conn)
+	queries := New(conn)
 
 	// Orquestación secuencial por tabla:
-	var user db.CreateUserRow
+	var user CreateUserRow
 	t.Run("Tabla_Usuario", func(t *testing.T) {
 		user = testUsuario(ctx, t, queries)
 	})
 
-	var materia db.ListaTarea
+	var materia ListaTarea
 	t.Run("Tabla_ListaTarea_Materia", func(t *testing.T) {
 		materia = testMateria(ctx, t, queries, user.IDUsuario)
 	})
 
-	var tarea db.Tarea
+	var tarea Tarea
 	t.Run("Tabla_Tarea", func(t *testing.T) {
 		tarea = testTarea(ctx, t, queries, materia.IDLista)
 	})
 
-	var horas db.HorasTrabajada
+	var horas HorasTrabajada
 	t.Run("Tabla_HorasTrabajadas", func(t *testing.T) {
 		horas = testHorasTrabajadas(ctx, t, queries, tarea.IDTarea)
 	})
@@ -54,9 +53,9 @@ func TestQueries_CRUD(t *testing.T) {
 // 1. FUNCIONES AUXILIARES POR TABLA
 // =============================================================================
 
-func testUsuario(ctx context.Context, t *testing.T, q *db.Queries) db.CreateUserRow {
+func testUsuario(ctx context.Context, t *testing.T, q *Queries) CreateUserRow {
 	// Create
-	params := db.CreateUserParams{
+	params := CreateUserParams{
 		Nombre:     "Hermes",
 		Apellido:   "Truelsegaard",
 		Email:      "hermes@example.com",
@@ -92,9 +91,9 @@ func testUsuario(ctx context.Context, t *testing.T, q *db.Queries) db.CreateUser
 	return user
 }
 
-func testMateria(ctx context.Context, t *testing.T, q *db.Queries, idUsuario int32) db.ListaTarea {
+func testMateria(ctx context.Context, t *testing.T, q *Queries, idUsuario int32) ListaTarea {
 	// Create
-	params := db.CreateMateriaParams{
+	params := CreateMateriaParams{
 		IDUsuario: idUsuario,
 		Titulo:    "Programación Web",
 	}
@@ -117,7 +116,7 @@ func testMateria(ctx context.Context, t *testing.T, q *db.Queries, idUsuario int
 	}
 
 	// Update
-	updateParams := db.UpdateMateriaParams{
+	updateParams := UpdateMateriaParams{
 		IDLista: materia.IDLista,
 		Titulo:  "Programación Web II",
 	}
@@ -132,12 +131,12 @@ func testMateria(ctx context.Context, t *testing.T, q *db.Queries, idUsuario int
 	return materiaActualizada
 }
 
-func testTarea(ctx context.Context, t *testing.T, q *db.Queries, idLista int32) db.Tarea {
+func testTarea(ctx context.Context, t *testing.T, q *Queries, idLista int32) Tarea {
 	ahora := time.Now().UTC().Truncate(time.Second)
 	vencimiento := ahora.Add(48 * time.Hour)
 
 	// Create
-	params := db.CreateTareaParams{
+	params := CreateTareaParams{
 		IDLista:           idLista,
 		Titulo:            "Entrega de TP2",
 		FechaInicio:       pgtype.Timestamp{Time: ahora, Valid: true},
@@ -172,7 +171,7 @@ func testTarea(ctx context.Context, t *testing.T, q *db.Queries, idLista int32) 
 	}
 
 	// List by Rango Fechas
-	tareasRango, err := q.ListTareasByRangoFechas(ctx, db.ListTareasByRangoFechasParams{
+	tareasRango, err := q.ListTareasByRangoFechas(ctx, ListTareasByRangoFechasParams{
 		FechaFinalizacion:   pgtype.Timestamp{Time: ahora.Add(-1 * time.Hour), Valid: true},
 		FechaFinalizacion_2: pgtype.Timestamp{Time: vencimiento.Add(1 * time.Hour), Valid: true},
 	})
@@ -184,7 +183,7 @@ func testTarea(ctx context.Context, t *testing.T, q *db.Queries, idLista int32) 
 	}
 
 	// Update
-	updateParams := db.UpdateTareaParams{
+	updateParams := UpdateTareaParams{
 		IDTarea:           tarea.IDTarea,
 		Titulo:            "Entrega de TP2 - Finalizada",
 		FechaInicio:       tarea.FechaInicio,
@@ -203,13 +202,13 @@ func testTarea(ctx context.Context, t *testing.T, q *db.Queries, idLista int32) 
 	return tareaActualizada
 }
 
-func testHorasTrabajadas(ctx context.Context, t *testing.T, q *db.Queries, idTarea int32) db.HorasTrabajada {
+func testHorasTrabajadas(ctx context.Context, t *testing.T, q *Queries, idTarea int32) HorasTrabajada {
 	ahora := time.Now().UTC().Truncate(time.Second)
 	inicioSesion := ahora.Add(1 * time.Hour)
 	finSesion := ahora.Add(3 * time.Hour)
 
 	// Create
-	params := db.CreateHorasTrabajadasParams{
+	params := CreateHorasTrabajadasParams{
 		IDTarea:         idTarea,
 		TimestampInicio: pgtype.Timestamp{Time: inicioSesion, Valid: true},
 		TimestampFin:    pgtype.Timestamp{Time: finSesion, Valid: true},
@@ -233,7 +232,7 @@ func testHorasTrabajadas(ctx context.Context, t *testing.T, q *db.Queries, idTar
 	}
 
 	// List by Rango Fechas
-	horasRango, err := q.ListHorasByRangoFechas(ctx, db.ListHorasByRangoFechasParams{
+	horasRango, err := q.ListHorasByRangoFechas(ctx, ListHorasByRangoFechasParams{
 		TimestampInicio:   pgtype.Timestamp{Time: ahora, Valid: true},
 		TimestampInicio_2: pgtype.Timestamp{Time: finSesion.Add(1 * time.Hour), Valid: true},
 	})
@@ -246,7 +245,7 @@ func testHorasTrabajadas(ctx context.Context, t *testing.T, q *db.Queries, idTar
 
 	// Update
 	finSesionCorregido := finSesion.Add(30 * time.Minute).Truncate(time.Second)
-	updateParams := db.UpdateHorasTrabajadasParams{
+	updateParams := UpdateHorasTrabajadasParams{
 		IDHoras:         horas.IDHoras,
 		TimestampInicio: horas.TimestampInicio,
 		TimestampFin:    pgtype.Timestamp{Time: finSesionCorregido, Valid: true},
@@ -263,7 +262,7 @@ func testHorasTrabajadas(ctx context.Context, t *testing.T, q *db.Queries, idTar
 	return horasActualizadas
 }
 
-func testLimpieza(ctx context.Context, t *testing.T, q *db.Queries, idHoras int32, idTarea int32, idLista int32, idUsuario int32) {
+func testLimpieza(ctx context.Context, t *testing.T, q *Queries, idHoras int32, idTarea int32, idLista int32, idUsuario int32) {
 	// 1. Delete Horas
 	if err := q.DeleteHorasTrabajadas(ctx, idHoras); err != nil {
 		t.Fatalf("DeleteHorasTrabajadas falló: %v", err)

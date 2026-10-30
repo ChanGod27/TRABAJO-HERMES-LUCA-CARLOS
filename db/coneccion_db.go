@@ -1,4 +1,4 @@
-package main
+package db
 
 /*Archivo que contiene el metodo para la conexion a la base de datos*/
 
@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func abridDB(ctx context.Context, connStr string) (*pgx.Conn, error) {
+func AbridDB(ctx context.Context, connStr string) (*pgx.Conn, error) {
 
 	conn, err := pgx.Connect(ctx, connStr)
 	if err != nil {
