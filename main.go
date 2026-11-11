@@ -29,10 +29,46 @@ func main() {
 	// Instanciar objeto de la base de datos (userRepository)
 	queries := db.New(conn)
 
-	// Implementacion del servidor de archivos
+	// Servidor de archivos estáticos (CSS, íconos, etc.)
 	staticDir := "./static"
-	fileServer := http.FileServer(http.Dir(staticDir))
-	http.Handle("/", fileServer)
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./static/css"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticDir))))
+
+	// ==========================================
+	// VISTAS TEMPL (HTML/CSS NATIVO)
+	// ==========================================
+
+	// Página principal: Lista de usuarios (layout.templ)
+	http.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+		handlers.UsuariosView(w, r, queries)
+	})
+	http.HandleFunc("GET /usuarios", func(w http.ResponseWriter, r *http.Request) {
+		handlers.UsuariosView(w, r, queries)
+	})
+
+	// Formulario para crear nuevo usuario (create_usuario.templ)
+	http.HandleFunc("GET /usuarios/nuevo", func(w http.ResponseWriter, r *http.Request) {
+		handlers.CreateUsuarioView(w, r)
+	})
+
+	// Inicio de sesión para comprobar contraseña (usuario.templ)
+	http.HandleFunc("GET /login", func(w http.ResponseWriter, r *http.Request) {
+		handlers.LoginView(w, r)
+	})
+	http.HandleFunc("POST /login", func(w http.ResponseWriter, r *http.Request) {
+		handlers.LoginSubmit(w, r, queries)
+	})
+
+	// Aviso para funcionalidades de próxima entrega (TP6)
+	http.HandleFunc("GET /tp6", func(w http.ResponseWriter, r *http.Request) {
+		handlers.TP6View(w, r)
+	})
+	http.HandleFunc("GET /calendario", func(w http.ResponseWriter, r *http.Request) {
+		handlers.TP6View(w, r)
+	})
+	http.HandleFunc("GET /materias", func(w http.ResponseWriter, r *http.Request) {
+		handlers.TP6View(w, r)
+	})
 
 	// Handlers que conectan las operaciones crud
 	// Usuarios
