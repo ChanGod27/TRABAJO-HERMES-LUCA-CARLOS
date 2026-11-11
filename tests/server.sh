@@ -57,15 +57,24 @@ start_server() {
     docker compose up -d db
     wait_for_db
 
-    # 3. Compilar el servidor Go
-    echo "2. Compilando el servidor Go..."
+    # 3. Generar código con sqlc
+    if command -v sqlc >/dev/null 2>&1; then
+        echo "2. Generando código con sqlc..."
+        sqlc generate
+    else
+        echo "⚠ Advertencia: sqlc no está instalado o no se encuentra en el PATH."
+    fi
+
+    # 4. Compilar el servidor Go
+    echo "3. Compilando el servidor Go..."
     go build -o "$BIN_FILE" .
     echo "✓ Compilación exitosa."
 
-    # 4. Levantar servidor en segundo plano
-    echo "3. Iniciando servidor en segundo plano..."
-    "$BIN_FILE" > "$LOG_FILE" 2>&1 &
+    # 5. Levantar servidor en segundo plano
+    echo "4. Iniciando servidor en segundo plano..."
+    nohup "$BIN_FILE" > "$LOG_FILE" 2>&1 &
     PID=$!
+    disown $PID 2>/dev/null || true
     echo "$PID" > "$PID_FILE"
 
     # 5. Esperar confirmación de arranque
