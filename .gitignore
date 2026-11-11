@@ -5,5 +5,5 @@
 /bin
 
 # Servidor en segundo plano y logs
-server.log
+*.log
 *.pid
