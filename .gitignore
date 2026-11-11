@@ -3,3 +3,7 @@
 /db/models.go
 /db/*.sql.go
 /bin
+
+# Servidor en segundo plano y logs
+server.log
+*.pid
