@@ -83,11 +83,15 @@ Es una sub-entidad que registra los bloques temporales dedicados efectivamente a
 
 ## 4. Matriz de Operaciones CRUD y Propósito en el Dominio
 
+Aquí tienes la tabla completa en un bloque de código Markdown sin ninguna modificación en el resto del contenido, lista para copiar:
+
 | Entidad | Operación SQLC | URL (Endpoint) | Propósito en la Aplicación |
 | :--- | :--- | :--- | :--- |
-| **Usuario** | `CreateUser` | `POST /usuarios` | Registro de una nueva cuenta con validación de email único. |
+| **Usuario** | `CreateUser` | `POST /usuarios` | Registro de una nueva cuenta con validación de email único (soporta tanto JSON como formulario con redirección a `?creado=ID`). |
 | | `GetUserByEmail` | `GET /usuarios?email={email}` | Búsqueda para autenticación. |
 | | `GetUserByID` | `GET /usuarios/{id}` | Carga de perfil del usuario logueado. |
+| | `ListUsers` | `GET /usuarios` | Renderizado de la lista de usuarios y vista principal (`view.LayoutPrincipal`), activando el usuario si viene `?creado=ID` o `?activo=ID`. |
+| | *- (Vista)* | `GET /usuarios/nuevo` | Renderizado del formulario HTML para la creación de un nuevo usuario (`view.CreateUsuarioPage`). |
 | **Materia** | `CreateMateria` | `POST /materias` | Creación de una nueva columna en el tablero. |
 | | `ListMateriasByUsuario` | `GET /materias/{usuario_id}` | Renderizado de las columnas del tablero del usuario activo. |
 | | `UpdateMateria` | `PUT /materias/{id}` | Edición del nombre de la columna. |
@@ -103,8 +107,9 @@ Es una sub-entidad que registra los bloques temporales dedicados efectivamente a
 | | `ListHorasByRangoFechas` | `GET /horas?FechaInicio={f1}&FechaInicio_2={f2}` | Cálculo de horas invertidas para paneles de estadística y bloques de tiempo. |
 | | `UpdateHorasTrabajadas` | `PUT /horas/{id}` | Corrección manual de horarios en caso de olvido al apagar el cronómetro. |
 | | `DeleteHorasTrabajadas` | `DELETE /horas/{id}` | Eliminación de sesiones cargadas por error. |
+| **Aviso** | *- (Vista)* | `GET /tp6` | Renderizado del cartel informativo para el próximo trabajo práctico (`view.TP6Aviso`). |
 
-
+💡 Si necesitás, podemos armar directamente el bloque de registro de rutas en Go (`http.NewServeMux`) conectando cada uno de estos endpoints con sus respectivos handlers.
 
 ---
 
