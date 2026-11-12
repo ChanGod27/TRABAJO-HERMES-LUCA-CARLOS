@@ -109,8 +109,6 @@ Aquí tienes la tabla completa en un bloque de código Markdown sin ninguna modi
 | | `DeleteHorasTrabajadas` | `DELETE /horas/{id}` | Eliminación de sesiones cargadas por error. |
 | **Aviso** | *- (Vista)* | `GET /tp6` | Renderizado del cartel informativo para el próximo trabajo práctico (`view.TP6Aviso`). |
 
-💡 Si necesitás, podemos armar directamente el bloque de registro de rutas en Go (`http.NewServeMux`) conectando cada uno de estos endpoints con sus respectivos handlers.
-
 ---
 
 ## 5. Lógica de Negocio y Reglas de Estado
