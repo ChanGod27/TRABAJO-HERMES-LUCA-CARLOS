@@ -7,3 +7,6 @@
 # Servidor en segundo plano y logs
 *.log
 *.pid
+
+# Archivos generados por templ en la carpeta
+/views/*.go
