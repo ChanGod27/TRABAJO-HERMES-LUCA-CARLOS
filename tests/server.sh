@@ -65,13 +65,21 @@ start_server() {
         echo "⚠ Advertencia: sqlc no está instalado o no se encuentra en el PATH."
     fi
 
-    # 4. Compilar el servidor Go
-    echo "3. Compilando el servidor Go..."
+    # 4. Generar vistas con templ
+    if command -v templ >/dev/null 2>&1; then
+        echo "3. Generando vistas con templ..."
+        templ generate
+    else
+        echo "⚠ Advertencia: templ no está instalado o no se encuentra en el PATH."
+    fi
+
+    # 5. Compilar el servidor Go
+    echo "4. Compilando el servidor Go..."
     go build -o "$BIN_FILE" .
     echo "✓ Compilación exitosa."
 
-    # 5. Levantar servidor en segundo plano
-    echo "4. Iniciando servidor en segundo plano..."
+    # 6. Levantar servidor en segundo plano
+    echo "5. Iniciando servidor en segundo plano..."
     nohup "$BIN_FILE" > "$LOG_FILE" 2>&1 &
     PID=$!
     disown $PID 2>/dev/null || true
