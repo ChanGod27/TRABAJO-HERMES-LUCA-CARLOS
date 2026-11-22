@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"ServidorEntregable/db"
-	"ServidorEntregable/view"
+	view "ServidorEntregable/views"
 	"encoding/json"
 	"log"
 	"net/http"
