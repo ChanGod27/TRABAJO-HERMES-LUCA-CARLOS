@@ -7,5 +7,3 @@
 /views/*.go
 
 /bin
-*.log
-server.log

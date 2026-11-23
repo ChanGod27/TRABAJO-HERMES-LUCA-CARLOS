@@ -180,14 +180,7 @@ templ MateriasContent(materias []MateriaConTareas) {
 											}
 
 											<!-- Checklist HTMX para completar la tarea -->
-											<form
-												action={ templ.URL(fmt.Sprintf("/tareas/%d/completar", t.IDTarea)) }
-												method="POST"
-												hx-post={ fmt.Sprintf("/tareas/%d/completar", t.IDTarea) }
-												hx-target="#main-content"
-												hx-swap="innerHTML"
-												class="task-checklist"
-											>
+											<div class="task-checklist">
 												<label class="checklist-label">
 													<input
 														type="checkbox"
@@ -199,7 +192,7 @@ templ MateriasContent(materias []MateriaConTareas) {
 													/>
 													<span>Marcar como completada</span>
 												</label>
-											</form>
+											</div>
 										</div>
 									}
 								}

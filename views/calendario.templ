@@ -54,14 +54,12 @@ templ CalendarioContent(tareas []db.Tarea, dias []DiaCalendario, eventos []Event
 				<i class="fa-solid fa-list-check"></i> Tarea:
 			</span>
 			<select id="timer-tarea-select" name="id_tarea" form="timer-save-form" class="timer-field" required>
-				if len(tareas) == 0 {
+				if len(tareasPendientes(tareas)) == 0 {
 					<option value="">Sin tareas disponibles</option>
 				} else {
 					<option value="">Seleccionar tarea...</option>
-					for _, t := range tareas {
-						if !t.Completada {
-							<option value={ fmt.Sprint(t.IDTarea) }>{ t.Titulo }</option>
-						}
+					for _, t := range tareasPendientes(tareas) {
+						<option value={ fmt.Sprint(t.IDTarea) }>{ t.Titulo }</option>
 					}
 				}
 			</select>
